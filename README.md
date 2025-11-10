@@ -1,2 +1,3 @@
 # sanluapp
-App to manage an organization
+
+docker compose --env-file .env up --build
