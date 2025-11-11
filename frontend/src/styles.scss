@@ -1,0 +1,81 @@
+// Angular Material v20 - Simple theme without complex Sass APIs
+@use '@angular/material' as mat;
+
+// Include core Material styles (typography, resets, etc)
+@include mat.core();
+
+// CSS custom properties for theming - a simpler approach
+// Primary: red (#f44336), Secondary/Accent: light blue (#90caf9), Text: black (#000000)
+:root {
+  // Color tokens
+  --mat-primary-color: #f44336;      // red
+  --mat-primary-light: #ffcdd2;      // light red
+  --mat-primary-dark: #d32f2f;       // dark red
+  
+  --mat-accent-color: #90caf9;       // light blue
+  --mat-accent-light: #e3f2fd;       // very light blue
+  --mat-accent-dark: #1976d2;        // dark blue
+  
+  --mat-warn-color: #ff9800;         // orange
+  
+  --mat-text-primary: #000000;       // black text
+  --mat-bg-primary: #ffffff;         // white background
+}
+
+// Apply custom properties to Material components
+// Toolbar with primary color
+.mat-mdc-toolbar-single-row,
+.mat-toolbar {
+  background-color: var(--mat-primary-color) !important;
+  color: var(--mat-text-primary) !important;
+}
+
+// Button theming
+.mat-mdc-button.mat-primary,
+.mat-raised-button.mat-primary,
+.mat-button.mat-primary {
+  color: white;
+  background-color: var(--mat-primary-color) !important;
+}
+
+// Cards
+.mat-card {
+  background-color: var(--mat-bg-primary) !important;
+  color: var(--mat-text-primary) !important;
+}
+
+// Form inputs
+.mat-mdc-form-field-label,
+.mat-form-field-label {
+  color: var(--mat-text-primary) !important;
+}
+
+.mat-mdc-text-field-wrapper,
+.mat-form-field-infix {
+  color: var(--mat-text-primary) !important;
+}
+
+// Lists
+.mat-mdc-list,
+.mat-list {
+  color: var(--mat-text-primary) !important;
+}
+
+.mat-mdc-list-item,
+.mat-list-item {
+  color: var(--mat-text-primary) !important;
+}
+
+// Custom app-level overrides
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  color: var(--mat-text-primary);
+  background-color: var(--mat-bg-primary);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+app-root {
+  display: block;
+}
