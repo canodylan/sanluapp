@@ -1,5 +1,5 @@
 # Etapa 1: construir el JAR con Maven y Java 25
-FROM maven:3.9-eclipse-temurin-25 AS builder
+FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 # Copiar solo el pom.xml primero para aprovechar la caché de Docker
@@ -15,7 +15,7 @@ COPY backend/src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: ejecutar el JAR final con una imagen más ligera
-FROM eclipse-temurin:25-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Crear un usuario no-root para mayor seguridad
