@@ -1,4 +1,4 @@
-# Script para ejecutar la aplicación en desarrollo con limpieza de BD automática
+# Script para ejecutar la aplicacion en desarrollo con limpieza de BD automática
 # Uso: .\run-local.ps1
 
 Write-Host "===============================================" -ForegroundColor Cyan
@@ -7,7 +7,7 @@ Write-Host "===============================================" -ForegroundColor Cy
 Write-Host ""
 
 Write-Host ""
-Write-Host "1. Compilando aplicación..." -ForegroundColor Yellow
+Write-Host "1. Compilando aplicacion..." -ForegroundColor Yellow
 & ".\mvnw.cmd" clean compile
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Error al compilar" -ForegroundColor Red
@@ -15,8 +15,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
-Write-Host "2. Ejecutando aplicación..." -ForegroundColor Green
-Write-Host "La aplicación estará disponible en: http://localhost:8080" -ForegroundColor Green
+Write-Host "2. Ejecutando aplicacion..." -ForegroundColor Green
+Write-Host "La aplicacion estará disponible en: http://localhost:8080" -ForegroundColor Green
 Write-Host ""
 
 & ".\mvnw.cmd" spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=local"

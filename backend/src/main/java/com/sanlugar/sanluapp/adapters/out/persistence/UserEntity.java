@@ -1,6 +1,6 @@
 package com.sanlugar.sanluapp.adapters.out.persistence;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,8 +49,8 @@ public class UserEntity {
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     @Column(name = "join_at")
-    private LocalDateTime joinAt;
+    private LocalDate joinAt;
 }

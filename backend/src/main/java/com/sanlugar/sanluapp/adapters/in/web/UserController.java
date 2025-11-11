@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.sanlugar.sanluapp.application.service.UserService;
 import com.sanlugar.sanluapp.domain.model.User;
@@ -17,6 +18,7 @@ import com.sanlugar.sanluapp.domain.model.User;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {

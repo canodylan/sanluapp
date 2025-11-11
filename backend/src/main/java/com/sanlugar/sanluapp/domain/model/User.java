@@ -1,6 +1,6 @@
 package com.sanlugar.sanluapp.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +24,6 @@ public class User {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private LocalDateTime birthday;
-    private LocalDateTime joinAt;
+    private LocalDate birthday;
+    private LocalDate joinAt;
 }

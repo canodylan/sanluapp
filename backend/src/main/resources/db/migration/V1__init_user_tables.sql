@@ -13,8 +13,7 @@ CREATE TABLE users (
     last_name       VARCHAR(50),
     phone_number    VARCHAR(20),
     birthday        DATE DEFAULT NULL,
-    --drink_type      VARCHAR(50), -- none, beer, wine, mixed, other
-    join_at         TIMESTAMP DEFAULT NOW()
+    join_at         DATE DEFAULT NULL
 );
 
 CREATE TABLE roles (
@@ -31,14 +30,14 @@ CREATE TABLE user_roles (
 -- Insert default roles
 INSERT INTO roles (name) VALUES ('ADMIN'), ('USER');
 
--- Insert an example admin and user
+-- Insert example users
 INSERT INTO users (username, password_hash, email, nickname, name, first_name, last_name, phone_number, birthday, join_at) 
 VALUES('admin', '1234', 'admin@admin.com', 'admin_nick', 'Admin Name', 'Garcia', 'Lopez', '692323966', '2000-01-01', NOW());
 
 INSERT INTO users (username, password_hash, email, nickname, name, first_name, last_name, phone_number, birthday, join_at) 
 VALUES('user', '1234', 'user@user.com', 'user_nick', 'User', 'Martinez', 'Gomez', '612345678', '1995-05-15', NOW());
 
--- Assign ADMIN role to the default admin user
+-- Assign ADMIN role to admin user
 WITH admin_user AS (
     SELECT id AS user_id FROM users WHERE username='admin'
 ),
@@ -49,7 +48,7 @@ INSERT INTO user_roles (user_id, role_id)
 SELECT admin_user.user_id, admin_role.role_id
 FROM admin_user, admin_role;
 
--- Assign USER role to the default user
+-- Assign USER role to normal user
 WITH normal_user AS (
     SELECT id AS user_id FROM users WHERE username='user'
 ),
