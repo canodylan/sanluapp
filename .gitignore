@@ -25,3 +25,6 @@ replay_pid*
 
 # Environment properties
 *.env
+
+
+settings.json
