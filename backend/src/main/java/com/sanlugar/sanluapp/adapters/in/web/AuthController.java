@@ -1,5 +1,6 @@
 package com.sanlugar.sanluapp.adapters.in.web;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sanlugar.sanluapp.adapters.in.web.auth.dto.LoginRequest;
 import com.sanlugar.sanluapp.adapters.in.web.auth.dto.LoginResponse;
+import com.sanlugar.sanluapp.adapters.in.web.auth.dto.RegisterRequest;
 import com.sanlugar.sanluapp.adapters.in.web.auth.dto.RefreshRequest;
 import com.sanlugar.sanluapp.adapters.in.web.auth.dto.RefreshResponse;
 import com.sanlugar.sanluapp.application.service.AuthService;
@@ -25,6 +27,12 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
         LoginResponse res = authService.login(req.getUsername(), req.getPassword());
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponse> register(@RequestBody RegisterRequest req) {
+        LoginResponse res = authService.register(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
     @PostMapping("/refresh")

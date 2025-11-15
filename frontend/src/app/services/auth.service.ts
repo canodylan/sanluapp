@@ -9,6 +9,16 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface RegisterPayload {
+  username: string;
+  password: string;
+  email: string;
+  nickname?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+}
+
 export interface AuthenticatedUser {
   id?: number;
   username: string;
@@ -39,6 +49,12 @@ export class AuthService {
   login(username: string, password: string): Observable<LoginResponse> {
     const body: LoginPayload = { username, password };
     return this.http.post<LoginResponse>(`${environment.authUrl}/login`, body).pipe(
+      tap((res) => this.saveTokens(res.accessToken, res.refreshToken))
+    );
+  }
+
+  register(payload: RegisterPayload): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${environment.authUrl}/register`, payload).pipe(
       tap((res) => this.saveTokens(res.accessToken, res.refreshToken))
     );
   }

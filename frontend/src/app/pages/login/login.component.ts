@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatInputModule, MatButtonModule],
+  imports: [CommonModule, FormsModule, MatCardModule, MatInputModule, MatButtonModule, RouterModule],
   template: `
     <mat-card class="login-card">
       <h2>Login</h2>
@@ -30,9 +30,13 @@ import { AuthService } from '../../services/auth.service';
           {{ loading ? 'Entrando...' : 'Login' }}
         </button>
       </form>
+      <p class="register-link">
+        ¿No tienes cuenta?
+        <a routerLink="/register">Crear una cuenta</a>
+      </p>
     </mat-card>
   `,
-  styles: [`.login-card{max-width:420px;margin:40px auto;padding:16px}.error{color:#c62828;margin:8px 0}`]
+  styles: [`.login-card{max-width:420px;margin:40px auto;padding:16px}.error{color:#c62828;margin:8px 0}.register-link{margin-top:16px}`]
 })
 export class LoginComponent {
   username = '';
