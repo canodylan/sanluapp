@@ -6,7 +6,6 @@ import { environment } from '../../environments/environment';
 export interface User {
   id?: number;
   username: string;
-  passwordHash?: string;
   email: string;
   nickname?: string;
   name?: string;
