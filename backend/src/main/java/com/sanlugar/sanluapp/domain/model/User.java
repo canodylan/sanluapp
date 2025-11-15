@@ -1,6 +1,8 @@
 package com.sanlugar.sanluapp.domain.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,4 +28,6 @@ public class User {
     private String phoneNumber;
     private LocalDate birthday;
     private LocalDate joinAt;
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 }

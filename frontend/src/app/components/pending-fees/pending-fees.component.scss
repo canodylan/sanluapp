@@ -1,0 +1,139 @@
+.pending-card {
+  display: block;
+  padding: 1.5rem;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  .eyebrow {
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
+  h2 {
+    margin: 0.25rem 0 0;
+    font-size: 1.5rem;
+  }
+
+  button mat-icon {
+    margin-right: 0.25rem;
+  }
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1rem;
+}
+
+.list {
+  border-right: 1px solid #eee;
+  padding-right: 1rem;
+
+  .fee-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      background: #f8f8f8;
+    }
+
+    &.active {
+      background: #e8f0ff;
+      border: 1px solid #c5d9ff;
+    }
+
+    div:first-child {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .amount {
+      font-weight: 600;
+    }
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  section {
+    background: #fafafa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1rem;
+  }
+
+  .discount-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 0.5rem;
+
+  span {
+    color: #777;
+    font-size: 0.85rem;
+  }
+
+  strong {
+    font-size: 1.1rem;
+  }
+}
+
+.alert {
+  margin-top: 1rem;
+  color: #b00020;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #555;
+}
+
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .list {
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
+
+  .discount-form {
+    grid-template-columns: 1fr;
+  }
+}

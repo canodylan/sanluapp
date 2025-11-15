@@ -1,0 +1,18 @@
+<mat-card class="login-card">
+  <h2>Login</h2>
+  <form (ngSubmit)="login()">
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Password" [(ngModel)]="password" name="password" type="password" required />
+    </mat-form-field>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="loading || !username || !password">
+      {{ loading ? 'Entrando...' : 'Login' }}
+    </button>
+  </form>
+</mat-card>

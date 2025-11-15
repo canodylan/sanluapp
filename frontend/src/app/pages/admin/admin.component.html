@@ -1,0 +1,21 @@
+<mat-toolbar color="primary" class="toolbar">
+  <div>
+    <span class="app-name">Panel de administración</span>
+    <small>Controla usuarios y accesos</small>
+  </div>
+  <span class="spacer"></span>
+  <button mat-stroked-button routerLink="/main">Volver al inicio</button>
+</mat-toolbar>
+
+<div class="content">
+  <mat-card class="admin-card">
+    <div class="actions">
+      <div>
+        <h2>Usuarios registrados</h2>
+        <p>Desde aquí puedes registrar nuevos perfiles o revisar los existentes.</p>
+      </div>
+      <button mat-raised-button color="accent" routerLink="/register">Registrar usuario</button>
+    </div>
+    <app-user-list></app-user-list>
+  </mat-card>
+</div>

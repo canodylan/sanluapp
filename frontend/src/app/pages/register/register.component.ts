@@ -12,40 +12,8 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, MatCardModule, MatInputModule, MatButtonModule],
-  template: `
-    <mat-card class="register-card">
-      <h2>Crear cuenta</h2>
-      <form (ngSubmit)="register()">
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Nombre de usuario" [(ngModel)]="username" name="username" required />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Email" [(ngModel)]="email" name="email" type="email" required />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Nick" [(ngModel)]="nickname" name="nickname" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Contraseña" [(ngModel)]="password" name="password" type="password" required />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Repetir contraseña" [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required />
-        </mat-form-field>
-
-        <p class="error" *ngIf="error">{{ error }}</p>
-
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
-          {{ loading ? 'Registrando...' : 'Registrarse' }}
-        </button>
-        <button mat-button type="button" (click)="goToLogin()" style="margin-left:8px">Volver al login</button>
-      </form>
-    </mat-card>
-  `,
-  styles: [`.register-card{max-width:480px;margin:32px auto;padding:16px}.error{color:#c62828;margin:8px 0}`]
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   username = '';
@@ -89,8 +57,8 @@ export class RegisterComponent {
       });
   }
 
-  goToLogin(): void {
+  goToAdmin(): void {
     if (this.loading) return;
-    this.router.navigate(['/login']);
+    this.router.navigate(['/admin']);
   }
 }

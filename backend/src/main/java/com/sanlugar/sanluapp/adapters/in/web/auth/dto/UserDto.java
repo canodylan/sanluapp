@@ -1,6 +1,7 @@
 package com.sanlugar.sanluapp.adapters.in.web.auth.dto;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class UserDto {
     private String phoneNumber;
     private LocalDate birthday;
     private LocalDate joinAt;
+    private Set<String> roles;
 }

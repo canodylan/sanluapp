@@ -1,0 +1,31 @@
+<mat-card class="register-card">
+  <h2>Crear cuenta</h2>
+  <form (ngSubmit)="register()">
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Nombre de usuario" [(ngModel)]="username" name="username" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Email" [(ngModel)]="email" name="email" type="email" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Nick" [(ngModel)]="nickname" name="nickname" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Contraseña" [(ngModel)]="password" name="password" type="password" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <input matInput placeholder="Repetir contraseña" [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required />
+    </mat-form-field>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+      {{ loading ? 'Registrando...' : 'Registrarse' }}
+    </button>
+    <button mat-button type="button" (click)="goToAdmin()" style="margin-left:8px">Volver a administración</button>
+  </form>
+</mat-card>

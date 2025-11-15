@@ -8,18 +8,20 @@
 // Primary: red (#f44336), Secondary/Accent: light blue (#90caf9), Text: black (#000000)
 :root {
   // Color tokens
-  --mat-primary-color: #f44336;      // red
-  --mat-primary-light: #ffcdd2;      // light red
-  --mat-primary-dark: #d32f2f;       // dark red
-  
-  --mat-accent-color: #90caf9;       // light blue
-  --mat-accent-light: #e3f2fd;       // very light blue
-  --mat-accent-dark: #1976d2;        // dark blue
-  
-  --mat-warn-color: #ff9800;         // orange
-  
-  --mat-text-primary: #000000;       // black text
-  --mat-bg-primary: #ffffff;         // white background
+  --mat-primary-color: #f44336;
+  --mat-primary-light: #ffcdd2;
+  --mat-primary-dark: #d32f2f;
+
+  --mat-accent-color: #90caf9;
+  --mat-accent-light: #e3f2fd;
+  --mat-accent-dark: #1976d2;
+
+  --mat-warn-color: #ff9800;
+
+  --mat-text-primary: #1f1f1f;
+  --mat-text-on-primary: #ffffff;
+  --mat-bg-primary: #f6f7fb;
+  --mat-surface: #ffffff;
 }
 
 // Apply custom properties to Material components
@@ -27,7 +29,7 @@
 .mat-mdc-toolbar-single-row,
 .mat-toolbar {
   background-color: var(--mat-primary-color) !important;
-  color: var(--mat-text-primary) !important;
+  color: var(--mat-text-on-primary) !important;
 }
 
 // Button theming
@@ -40,8 +42,10 @@
 
 // Cards
 .mat-card {
-  background-color: var(--mat-bg-primary) !important;
+  background-color: var(--mat-surface) !important;
   color: var(--mat-text-primary) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.04) !important;
 }
 
 // Form inputs
@@ -73,7 +77,7 @@ html, body {
   padding: 0;
   color: var(--mat-text-primary);
   background-color: var(--mat-bg-primary);
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
 }
 
 app-root {

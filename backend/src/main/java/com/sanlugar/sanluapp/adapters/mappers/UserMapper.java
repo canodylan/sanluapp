@@ -1,7 +1,10 @@
 package com.sanlugar.sanluapp.adapters.mappers;
 
-import com.sanlugar.sanluapp.adapters.out.persistence.UserEntity;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import com.sanlugar.sanluapp.adapters.in.web.auth.dto.UserDto;
+import com.sanlugar.sanluapp.adapters.out.persistence.UserEntity;
 import com.sanlugar.sanluapp.domain.model.User;
 
 public final class UserMapper {
@@ -22,6 +25,7 @@ public final class UserMapper {
                 .phoneNumber(e.getPhoneNumber())
                 .birthday(e.getBirthday())
                 .joinAt(e.getJoinAt())
+                .roles(RoleMapper.toDomainSet(e.getRoles()))
                 .build();
     }
 
@@ -39,6 +43,7 @@ public final class UserMapper {
                 .phoneNumber(u.getPhoneNumber())
                 .birthday(u.getBirthday())
                 .joinAt(u.getJoinAt())
+                .roles(RoleMapper.toEntitySet(u.getRoles()))
                 .build();
     }
 
@@ -55,6 +60,8 @@ public final class UserMapper {
                 .phoneNumber(u.getPhoneNumber())
                 .birthday(u.getBirthday())
                 .joinAt(u.getJoinAt())
+            .roles(u.getRoles() == null ? Collections.emptySet()
+                : u.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet()))
                 .build();
     }
 }

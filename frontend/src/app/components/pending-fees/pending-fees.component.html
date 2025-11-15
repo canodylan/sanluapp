@@ -1,0 +1,91 @@
+<mat-card class="pending-card">
+  <header>
+    <div>
+      <p class="eyebrow">Tesorería</p>
+      <h2>Cuotas pendientes</h2>
+    </div>
+    <button mat-stroked-button color="primary" (click)="loadPending()" [disabled]="loading()">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </header>
+
+  <div class="content" *ngIf="!loading(); else loadingTpl">
+    <div class="list">
+      <div
+        class="fee-row"
+        *ngFor="let fee of pendingFees()"
+        (click)="selectFee(fee)"
+        [class.active]="fee.id === selectedFee()?.id">
+        <div>
+          <strong>{{ fee.year }}</strong>
+          <span>{{ fee.daysAttending }} días</span>
+        </div>
+        <div class="amount">{{ fee.baseAmount | number:'1.2-2' }} €</div>
+      </div>
+      <p *ngIf="!pendingFees().length">No hay cuotas pendientes.</p>
+    </div>
+
+    <div class="details" *ngIf="selectedFee() as fee">
+      <h3>Detalle de cuota</h3>
+      <div class="summary">
+        <div>
+          <span>Usuario</span>
+          <strong>#{{ fee.userId }}</strong>
+        </div>
+        <div>
+          <span>Días</span>
+          <strong>{{ fee.daysAttending }}</strong>
+        </div>
+        <div>
+          <span>Base</span>
+          <strong>{{ fee.baseAmount | number:'1.2-2' }} €</strong>
+        </div>
+      </div>
+
+      <section>
+        <h4>Días seleccionados</h4>
+        <ul>
+          <li *ngFor="let day of fee.attendanceDays">{{ day.attendanceDate | date:'fullDate' }}</li>
+        </ul>
+      </section>
+
+      <section>
+        <h4>Aplicar descuento</h4>
+        <div class="discount-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Concepto</mat-label>
+            <input matInput [(ngModel)]="discountConcept" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Monto (€)</mat-label>
+            <input matInput type="number" min="0" step="0.5" [(ngModel)]="discountAmount" />
+          </mat-form-field>
+        </div>
+        <button mat-raised-button color="accent" (click)="applyDiscount()" [disabled]="!canApplyDiscount">
+          Aplicar descuento
+        </button>
+      </section>
+
+      <section>
+        <h4>Descuentos aplicados</h4>
+        <ul>
+          <li *ngFor="let discount of fee.discounts">
+            <strong>{{ discount.concept }}</strong>
+            <span>-{{ discount.amount | number:'1.2-2' }} €</span>
+          </li>
+        </ul>
+      </section>
+
+      <button mat-stroked-button color="primary" (click)="markAsPaid()" [disabled]="markingPaid">
+        Marcar como pagada
+      </button>
+    </div>
+  </div>
+
+  <div class="alert" *ngIf="error()">{{ error() }}</div>
+</mat-card>
+
+<ng-template #loadingTpl>
+  <div class="loading">Cargando cuotas...</div>
+</ng-template>

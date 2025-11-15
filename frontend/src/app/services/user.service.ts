@@ -14,6 +14,7 @@ export interface User {
   phoneNumber?: string;
   birthday?: string;
   joinAt?: string;
+  roles?: string[];
 }
 
 @Injectable({ providedIn: 'root' })

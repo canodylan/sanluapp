@@ -5,9 +5,12 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.sanlugar.sanluapp.adapters.out.persistence.RoleEntity;
 import com.sanlugar.sanluapp.adapters.out.persistence.UserEntity;
 
 import io.jsonwebtoken.Claims;
@@ -34,6 +37,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("uid", user.getId())
+            .claim("roles", extractRoleNames(user))
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(exp))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -68,5 +72,21 @@ public class JwtService {
     public String extractUsername(String token) {
         Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         return claims.getBody().getSubject();
+    }
+
+    public List<String> extractRoles(String token) {
+        Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+        Object rolesObj = claims.getBody().get("roles");
+        if (rolesObj instanceof List<?> list) {
+            return list.stream().map(Object::toString).collect(Collectors.toList());
+        }
+        return List.of();
+    }
+
+    private List<String> extractRoleNames(UserEntity user) {
+        if (user.getRoles() == null) {
+            return List.of();
+        }
+        return user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList());
     }
 }

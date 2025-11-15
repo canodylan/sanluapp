@@ -12,31 +12,8 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, MatCardModule, MatInputModule, MatButtonModule, RouterModule],
-  template: `
-    <mat-card class="login-card">
-      <h2>Login</h2>
-      <form (ngSubmit)="login()">
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Password" [(ngModel)]="password" name="password" type="password" required />
-        </mat-form-field>
-
-        <p class="error" *ngIf="error">{{ error }}</p>
-
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading || !username || !password">
-          {{ loading ? 'Entrando...' : 'Login' }}
-        </button>
-      </form>
-      <p class="register-link">
-        ¿No tienes cuenta?
-        <a routerLink="/register">Crear una cuenta</a>
-      </p>
-    </mat-card>
-  `,
-  styles: [`.login-card{max-width:420px;margin:40px auto;padding:16px}.error{color:#c62828;margin:8px 0}.register-link{margin-top:16px}`]
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   username = '';
