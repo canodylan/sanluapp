@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { finalize } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,26 +17,45 @@ import { MatButtonModule } from '@angular/material/button';
       <h2>Login</h2>
       <form (ngSubmit)="login()">
         <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Username" [(ngModel)]="username" name="username" />
+          <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline" style="width:100%">
-          <input matInput placeholder="Password" [(ngModel)]="password" name="password" type="password" />
+          <input matInput placeholder="Password" [(ngModel)]="password" name="password" type="password" required />
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit">Login</button>
+        <p class="error" *ngIf="error">{{ error }}</p>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || !username || !password">
+          {{ loading ? 'Entrando...' : 'Login' }}
+        </button>
       </form>
     </mat-card>
   `,
-  styles: [`.login-card{max-width:420px;margin:40px auto;padding:16px}`]
+  styles: [`.login-card{max-width:420px;margin:40px auto;padding:16px}.error{color:#c62828;margin:8px 0}`]
 })
 export class LoginComponent {
   username = '';
   password = '';
-  constructor(private router: Router) {}
+  loading = false;
+  error: string | null = null;
+
+  constructor(private router: Router, private authService: AuthService) {}
 
   login() {
-    // Basic placeholder login — in real app validate credentials
-    this.router.navigate(['/main']);
+    if (!this.username || !this.password || this.loading) return;
+
+    this.error = null;
+    this.loading = true;
+    this.authService
+      .login(this.username, this.password)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => this.router.navigate(['/home']),
+        error: (err) => {
+          const backendMessage = err?.error?.message;
+          this.error = backendMessage ?? 'Credenciales inválidas';
+        }
+      });
   }
 }
