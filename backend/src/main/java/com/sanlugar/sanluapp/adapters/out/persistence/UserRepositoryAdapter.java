@@ -24,6 +24,21 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByUsername(String username) {
+        return repo.findByUsername(username).map(UserMapper::toDomain);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return repo.findByEmail(email).map(UserMapper::toDomain);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return repo.existsByEmail(email);
+    }
+
+    @Override
     public User save(User user) {
         UserEntity entity = UserMapper.toEntity(user);
         UserEntity saved = repo.save(entity);

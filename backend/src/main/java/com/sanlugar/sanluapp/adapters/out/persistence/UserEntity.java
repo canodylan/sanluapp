@@ -49,6 +49,7 @@ public class UserEntity {
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
+    @Column(name = "birthday")
     private LocalDate birthday;
 
     @Column(name = "join_at")

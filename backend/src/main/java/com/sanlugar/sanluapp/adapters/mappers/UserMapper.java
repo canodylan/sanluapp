@@ -1,6 +1,7 @@
 package com.sanlugar.sanluapp.adapters.mappers;
 
 import com.sanlugar.sanluapp.adapters.out.persistence.UserEntity;
+import com.sanlugar.sanluapp.adapters.in.web.auth.dto.UserDto;
 import com.sanlugar.sanluapp.domain.model.User;
 
 public final class UserMapper {
@@ -30,6 +31,22 @@ public final class UserMapper {
                 .id(u.getId())
                 .username(u.getUsername())
                 .passwordHash(u.getPasswordHash())
+                .email(u.getEmail())
+                .nickname(u.getNickname())
+                .name(u.getName())
+                .firstName(u.getFirstName())
+                .lastName(u.getLastName())
+                .phoneNumber(u.getPhoneNumber())
+                .birthday(u.getBirthday())
+                .joinAt(u.getJoinAt())
+                .build();
+    }
+
+    public static UserDto toDto(User u) {
+        if (u == null) return null;
+        return UserDto.builder()
+                .id(u.getId())
+                .username(u.getUsername())
                 .email(u.getEmail())
                 .nickname(u.getNickname())
                 .name(u.getName())

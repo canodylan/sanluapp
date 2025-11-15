@@ -17,9 +17,14 @@ import lombok.RequiredArgsConstructor;
 public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Override
     public User create(User user) {
+        // assume user.passwordHash contains the raw password on create -> encode it
+        if (user.getPasswordHash() != null) {
+            user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+        }
         return userRepository.save(user);
     }
 
