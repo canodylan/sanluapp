@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class DefaultMembershipFeeService implements MembershipFeeService {
 
-    private static final BigDecimal BASE_FEE = new BigDecimal("50.00");
-    private static final BigDecimal DAILY_RATE = new BigDecimal("5.00");
+    private static final BigDecimal BASE_FEE = new BigDecimal("0.00"); //TODO
+    private static final BigDecimal DAILY_RATE = new BigDecimal("10.00");
 
     private final MembershipFeeRepository membershipFeeRepository;
 

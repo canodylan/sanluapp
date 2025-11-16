@@ -1,5 +1,9 @@
 main {
-  padding: 2rem;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  display: block;
 }
 
 h1 {

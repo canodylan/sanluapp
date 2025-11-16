@@ -1,33 +1,8 @@
-<mat-toolbar color="primary" class="toolbar">
-  <div class="brand">
-    <span class="app-name">SanLuApp</span>
-    <small>Panel principal</small>
+<section class="announcement-wrapper">
+  <div class="announcement-card">
+    <p class="eyebrow">Anuncio</p>
+    <h1>¡Novedades en camino!</h1>
+    <p class="subtitle">Muy pronto activaremos un panel de noticias para mantener a todos informados.</p>
+    <div class="badge">Próximamente</div>
   </div>
-  <span class="spacer"></span>
-  <button mat-stroked-button color="warn" (click)="logout()" [disabled]="isLoggingOut">Salir</button>
-</mat-toolbar>
-
-<div class="page">
-  <section class="hero" *ngIf="user as currentUser">
-    <p class="eyebrow">Bienvenido</p>
-    <h1>{{ currentUser.nickname || currentUser.username }}</h1>
-    <p class="subtitle">Este es tu espacio personal para consultar información y acceder a tus cuotas.</p>
-    <div class="hero-actions">
-      <button mat-raised-button color="accent" routerLink="/quota">Ir a Cuota</button>
-      <button *ngIf="isAdmin" mat-stroked-button color="primary" routerLink="/admin">Administrar usuarios</button>
-    </div>
-  </section>
-
-  <section class="quota-section">
-    <mat-card>
-      <div class="quota-content">
-        <div>
-          <p class="eyebrow">Cuota</p>
-          <h3>Gestiona tu cuota</h3>
-          <p>Consulta el estado de tus cuotas y mantente al día.</p>
-        </div>
-        <button mat-raised-button color="primary" routerLink="/quota">Cuota</button>
-      </div>
-    </mat-card>
-  </section>
-</div>
+</section>

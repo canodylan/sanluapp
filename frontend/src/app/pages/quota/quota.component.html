@@ -1,79 +1,81 @@
-<mat-toolbar color="primary" class="toolbar">
-  <span class="title">Cuota</span>
-  <span class="spacer"></span>
-  <button mat-stroked-button color="accent" routerLink="/main">Volver al main</button>
-</mat-toolbar>
-
 <ng-container *ngIf="!loading(); else loadingTpl">
-  <div class="page">
-    <div class="alerts">
-      <div class="alert success" *ngIf="success()">{{ success() }}</div>
-      <div class="alert error" *ngIf="error()">{{ error() }}</div>
+  <div class="quota-wrapper">
+    <header class="quota-header">
+      <div>
+        <p class="eyebrow">Panel de cuotas</p>
+        <h2>Gestiona tu asistencia</h2>
+      </div>
+      <div class="alerts">
+        <div class="alert success" *ngIf="success()">{{ success() }}</div>
+        <div class="alert error" *ngIf="error()">{{ error() }}</div>
+      </div>
+    </header>
+
+    <div class="cards-grid">
+      <mat-card class="status-card" *ngIf="selectedFee() as fee; else pendingCreation">
+        <p class="eyebrow">Estado</p>
+        <h1>{{ statusMessage }}</h1>
+
+        <div class="amounts">
+          <div>
+            <span class="label">Días</span>
+            <strong>{{ fee.daysAttending }}</strong>
+          </div>
+          <div>
+            <span class="label">Base</span>
+            <strong>{{ fee.baseAmount | number:'1.2-2' }} €</strong>
+          </div>
+          <div>
+            <span class="label">Descuentos</span>
+            <strong>-{{ fee.discountTotal | number:'1.2-2' }} €</strong>
+          </div>
+          <div>
+            <span class="label">Total</span>
+            <strong>{{ fee.finalAmount | number:'1.2-2' }} €</strong>
+          </div>
+        </div>
+
+        <section class="detail" *ngIf="fee.attendanceDays.length">
+          <h3>Días seleccionados</h3>
+          <ul>
+            <li *ngFor="let day of fee.attendanceDays">{{ day.attendanceDate | date:'fullDate' }}</li>
+          </ul>
+        </section>
+
+        <section class="detail" *ngIf="fee.discounts.length">
+          <h3>Descuentos aplicados</h3>
+          <ul>
+            <li *ngFor="let discount of fee.discounts">
+              <strong>{{ discount.concept }}</strong>
+              <span>-{{ discount.amount | number:'1.2-2' }} €</span>
+            </li>
+          </ul>
+        </section>
+      </mat-card>
+
+      <mat-card class="form-card">
+        <h2>Selecciona tus días de asistencia</h2>
+        <p>Ingresa las fechas en las que planeas asistir para {{ year() }}.</p>
+
+        <div class="form-row">
+          <input type="date" [(ngModel)]="newDate" />
+          <button mat-raised-button color="primary" (click)="addDate()" [disabled]="!newDate">Añadir</button>
+        </div>
+
+        <div class="selected-dates" *ngIf="selectedDates().length">
+          <div class="date-chip" *ngFor="let date of selectedDates()">
+            <span>{{ date | date:'fullDate' }}</span>
+            <button mat-icon-button color="warn" (click)="removeDate(date)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <button mat-stroked-button color="accent" (click)="submitDates()" [disabled]="!canSubmitDates">
+          Enviar días
+        </button>
+      </mat-card>
     </div>
-
-    <mat-card class="status-card" *ngIf="selectedFee() as fee; else pendingCreation">
-      <p class="eyebrow">Estado</p>
-      <h1>{{ statusMessage }}</h1>
-
-      <div class="amounts">
-        <div>
-          <span class="label">Días</span>
-          <strong>{{ fee.daysAttending }}</strong>
-        </div>
-        <div>
-          <span class="label">Base</span>
-          <strong>{{ fee.baseAmount | number:'1.2-2' }} €</strong>
-        </div>
-        <div>
-          <span class="label">Descuentos</span>
-          <strong>-{{ fee.discountTotal | number:'1.2-2' }} €</strong>
-        </div>
-        <div>
-          <span class="label">Total</span>
-          <strong>{{ fee.finalAmount | number:'1.2-2' }} €</strong>
-        </div>
-      </div>
-
-      <section class="detail" *ngIf="fee.attendanceDays.length">
-        <h3>Días seleccionados</h3>
-        <ul>
-          <li *ngFor="let day of fee.attendanceDays">{{ day.attendanceDate | date:'fullDate' }}</li>
-        </ul>
-      </section>
-
-      <section class="detail" *ngIf="fee.discounts.length">
-        <h3>Descuentos aplicados</h3>
-        <ul>
-          <li *ngFor="let discount of fee.discounts">
-            <strong>{{ discount.concept }}</strong>
-            <span>-{{ discount.amount | number:'1.2-2' }} €</span>
-          </li>
-        </ul>
-      </section>
-    </mat-card>
-
-    <mat-card class="form-card">
-      <h2>Selecciona tus días de asistencia</h2>
-      <p>Ingresa las fechas en las que planeas asistir para {{ year() }}.</p>
-
-      <div class="form-row">
-        <input type="date" [(ngModel)]="newDate" />
-        <button mat-raised-button color="primary" (click)="addDate()" [disabled]="!newDate">Añadir</button>
-      </div>
-
-      <div class="selected-dates" *ngIf="selectedDates().length">
-        <div class="date-chip" *ngFor="let date of selectedDates()">
-          <span>{{ date | date:'fullDate' }}</span>
-          <button mat-icon-button color="warn" (click)="removeDate(date)">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-      </div>
-
-      <button mat-stroked-button color="accent" (click)="submitDates()" [disabled]="!canSubmitDates">
-        Enviar días
-      </button>
-    </mat-card>
   </div>
 </ng-container>
 

@@ -5,10 +5,10 @@
 @include mat.core();
 
 // CSS custom properties for theming - a simpler approach
-// Primary: red (#f44336), Secondary/Accent: light blue (#90caf9), Text: black (#000000)
+// Primary: red (#cf271b), Secondary/Accent: light blue (#90caf9), Text: black (#000000)
 :root {
-  // Color tokens
-  --mat-primary-color: #f44336;
+  // Color tokens - Light theme
+  --mat-primary-color: #cf271b;
   --mat-primary-light: #ffcdd2;
   --mat-primary-dark: #d32f2f;
 
@@ -19,9 +19,37 @@
   --mat-warn-color: #ff9800;
 
   --mat-text-primary: #1f1f1f;
+  --mat-text-secondary: #5f6368;
   --mat-text-on-primary: #ffffff;
   --mat-bg-primary: #f6f7fb;
   --mat-surface: #ffffff;
+
+  --shell-sidebar-bg: #d3d3d3;
+  --shell-sidebar-text: #1f1f1f;
+  --shell-content-bg: #f4f5fb;
+}
+
+// Dark theme
+.dark-theme {
+  --mat-primary-color: #ff4444;
+  --mat-primary-light: #ff6b6b;
+  --mat-primary-dark: #cc0000;
+
+  --mat-accent-color: #64b5f6;
+  --mat-accent-light: #90caf9;
+  --mat-accent-dark: #1976d2;
+
+  --mat-warn-color: #ffa726;
+
+  --mat-text-primary: #e0e0e0;
+  --mat-text-secondary: #b0b0b0;
+  --mat-text-on-primary: #ffffff;
+  --mat-bg-primary: #121212;
+  --mat-surface: #1e1e1e;
+
+  --shell-sidebar-bg: #1b1b1b;
+  --shell-sidebar-text: #f5f5f5;
+  --shell-content-bg: #0f0f0f;
 }
 
 // Apply custom properties to Material components
@@ -76,7 +104,7 @@ html, body {
   margin: 0;
   padding: 0;
   color: var(--mat-text-primary);
-  background-color: var(--mat-bg-primary);
+  background-color: var(--shell-content-bg);
   font-family: 'Roboto', 'Helvetica Neue', sans-serif;
 }
 
