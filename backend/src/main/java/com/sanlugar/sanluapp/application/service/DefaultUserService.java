@@ -56,13 +56,17 @@ public class DefaultUserService implements UserService {
             existing.setFirstName(user.getFirstName());
             existing.setLastName(user.getLastName());
             existing.setPhoneNumber(user.getPhoneNumber());
-            existing.setBirthday(user.getBirthday());
-            existing.setJoinAt(user.getJoinAt());
             if (user.getRoles() != null) {
                 existing.setRoles(resolveRoles(user.getRoles()));
             }
             if (user.getPasswordHash() != null && !user.getPasswordHash().isBlank()) {
                 existing.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+            }
+            if (user.getBirthday() != null) {
+                existing.setBirthday(user.getBirthday());
+            }
+            if (user.getJoinAt() != null) {
+                existing.setJoinAt(user.getJoinAt());
             }
             return userRepository.save(existing);
         });
