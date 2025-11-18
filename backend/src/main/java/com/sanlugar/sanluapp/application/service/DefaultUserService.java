@@ -39,6 +39,28 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public Optional<User> update(Long id, User user) {
+        return userRepository.findById(id).map(existing -> {
+            existing.setUsername(user.getUsername());
+            existing.setEmail(user.getEmail());
+            existing.setNickname(user.getNickname());
+            existing.setName(user.getName());
+            existing.setFirstName(user.getFirstName());
+            existing.setLastName(user.getLastName());
+            existing.setPhoneNumber(user.getPhoneNumber());
+            existing.setBirthday(user.getBirthday());
+            existing.setJoinAt(user.getJoinAt());
+            if (user.getRoles() != null) {
+                existing.setRoles(user.getRoles());
+            }
+            if (user.getPasswordHash() != null && !user.getPasswordHash().isBlank()) {
+                existing.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+            }
+            return userRepository.save(existing);
+        });
+    }
+
+    @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
     }

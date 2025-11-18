@@ -1,11 +1,21 @@
-<div class="dashboard-shell">
+<div class="dashboard-shell" [class.is-mobile]="isMobile$ | async" [class.mobile-menu-open]="mobileMenuOpen">
   <header class="shell-header">
+    <button
+      type="button"
+      class="mobile-menu-btn"
+      mat-icon-button
+      (click)="toggleMobileMenu()"
+      *ngIf="isMobile$ | async"
+      [attr.aria-label]="mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'">
+      <mat-icon>{{ mobileMenuOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
+
     <a class="logo" routerLink="/main">SANLUAPP</a>
-    <div class="header-actions">
+    <div class="header-actions" [class.compact]="isMobile$ | async">
       <button mat-icon-button class="theme-btn" (click)="toggleTheme()" [attr.aria-label]="isDarkTheme ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'">
         <mat-icon>{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
-      <div class="user-pill">
+      <div class="user-pill" *ngIf="!(isMobile$ | async)">
         <div class="avatar">{{ userInitials }}</div>
         <div class="user-info">
           <span class="user-name">{{ user?.nickname || user?.username || 'Usuario' }}</span>
@@ -14,17 +24,49 @@
           </button>
         </div>
       </div>
+      <button
+        mat-stroked-button
+        color="accent"
+        class="mobile-logout"
+        *ngIf="isMobile$ | async"
+        (click)="logout()"
+        [disabled]="isLoggingOut">
+        {{ isLoggingOut ? 'Saliendo...' : 'Salir' }}
+      </button>
     </div>
   </header>
 
+  <div class="mobile-nav-backdrop" *ngIf="mobileMenuOpen" (click)="toggleMobileMenu()"></div>
+
   <div class="shell-body">
-    <nav class="shell-sidebar">
+    <nav class="shell-sidebar" *ngIf="!(isMobile$ | async)" aria-label="Navegación principal">
       <div class="nav-title">Menú</div>
       <a *ngFor="let link of navLinks; trackBy: trackByLink"
          class="nav-link"
          [routerLink]="link.route"
          routerLinkActive="active"
          [routerLinkActiveOptions]="{ exact: true }">
+        {{ link.label }}
+      </a>
+    </nav>
+
+    <nav class="mobile-nav-drawer" *ngIf="isMobile$ | async" aria-label="Navegación principal" [class.open]="mobileMenuOpen">
+      <div class="mobile-nav-header">
+        <div class="avatar">{{ userInitials }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ user?.nickname || user?.username || 'Usuario' }}</span>
+          <button mat-stroked-button color="accent" (click)="logout()" [disabled]="isLoggingOut">
+            {{ isLoggingOut ? 'Saliendo...' : 'Salir' }}
+          </button>
+        </div>
+      </div>
+      <div class="nav-title">Menú</div>
+      <a *ngFor="let link of navLinks; trackBy: trackByLink"
+         class="nav-link"
+         [routerLink]="link.route"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: true }"
+         (click)="handleNavSelection()">
         {{ link.label }}
       </a>
     </nav>

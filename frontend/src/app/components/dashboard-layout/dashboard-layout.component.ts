@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DeviceService } from '../../services/device.service';
 
 interface NavLink {
   label: string;
@@ -23,12 +24,15 @@ export class DashboardLayoutComponent {
   private authService = inject(AuthService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  private deviceService = inject(DeviceService);
 
   user = this.authService.getCurrentUser();
   isDarkTheme = false;
   isLoggingOut = false;
   navLinks = this.buildNavLinks();
   readonly trackByLink = (_: number, link: NavLink) => link.route;
+  readonly isMobile$ = this.deviceService.isMobile$;
+  mobileMenuOpen = false;
 
   constructor() {
     this.themeService.isDarkTheme$
@@ -67,5 +71,15 @@ export class DashboardLayoutComponent {
         next: () => this.router.navigate(['/login']),
         error: () => this.router.navigate(['/login'])
       });
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  handleNavSelection(): void {
+    if (this.deviceService.currentDeviceType === 'mobile') {
+      this.mobileMenuOpen = false;
+    }
   }
 }

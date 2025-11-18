@@ -27,7 +27,6 @@ import com.sanlugar.sanluapp.domain.model.MembershipFeeStatus;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/membership-fees")
 @RequiredArgsConstructor
 @Validated

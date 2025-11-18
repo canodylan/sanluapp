@@ -1,26 +1,36 @@
-<div class="login-container">
-  <mat-card class="login-card">
-    <div class="login-header">
-      <h1>Bienvenido</h1>
-      <p class="subtitle">Inicia sesión para continuar</p>
+<div class="login-shell" [class.is-mobile]="isMobile$ | async">
+  <section class="login-brand" *ngIf="!(isMobile$ | async)">
+    <div class="brand-content">
+      <p class="eyebrow">Tu comunidad, en cualquier dispositivo</p>
+      <h1>Sanluapp</h1>
+      <p>Gestiona cuotas, miembros y avisos desde una experiencia optimizada para móvil. Instálala como app y mantente siempre conectado.</p>
     </div>
-    
-    <form (ngSubmit)="login()">
-      <mat-form-field appearance="outline" class="login-field">
-        <mat-label>Usuario</mat-label>
-        <input matInput [(ngModel)]="username" name="username" required />
-      </mat-form-field>
+  </section>
 
-      <mat-form-field appearance="outline" class="login-field">
-        <mat-label>Contraseña</mat-label>
-        <input matInput [(ngModel)]="password" name="password" type="password" required />
-      </mat-form-field>
+  <section class="login-panel">
+    <mat-card class="login-card">
+      <div class="login-header">
+        <h2>Bienvenido</h2>
+        <p class="subtitle">Inicia sesión para continuar</p>
+      </div>
 
-      <p class="error" *ngIf="error">{{ error }}</p>
+      <form (ngSubmit)="login()">
+        <mat-form-field appearance="outline" class="login-field">
+          <mat-label>Usuario</mat-label>
+          <input class="login-input" matInput [(ngModel)]="username" name="username" required />
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit" class="login-button" [disabled]="loading || !username || !password">
-        {{ loading ? 'Entrando...' : 'Iniciar Sesión' }}
-      </button>
-    </form>
-  </mat-card>
+        <mat-form-field appearance="outline" class="login-field">
+          <mat-label>Contraseña</mat-label>
+          <input class="login-input" matInput [(ngModel)]="password" name="password" type="password" required />
+        </mat-form-field>
+
+        <p class="error" *ngIf="error">{{ error }}</p>
+
+        <button mat-raised-button color="primary" type="submit" class="login-button" [disabled]="loading || !username || !password">
+          {{ loading ? 'Entrando...' : 'Iniciar Sesión' }}
+        </button>
+      </form>
+    </mat-card>
+  </section>
 </div>
