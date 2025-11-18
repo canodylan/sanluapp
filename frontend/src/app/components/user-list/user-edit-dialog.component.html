@@ -1,38 +1,122 @@
 <h2 mat-dialog-title>Editar usuario</h2>
+
 <form [formGroup]="form" (ngSubmit)="save()" mat-dialog-content class="dialog-content" id="userEditForm">
-  <mat-form-field appearance="outline">
-    <mat-label>Nombre de usuario</mat-label>
-    <input matInput formControlName="username" />
-    <mat-error *ngIf="form.controls.username.hasError('required')">Campo obligatorio</mat-error>
-  </mat-form-field>
+  <section class="section">
+    <div class="section-head">
+      <mat-icon>badge</mat-icon>
+      <div>
+        <h3>Credenciales</h3>
+        <p>Datos necesarios para iniciar sesión</p>
+      </div>
+    </div>
+    <div class="section-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre de usuario</mat-label>
+        <input matInput formControlName="username" />
+        <mat-error *ngIf="form.controls.username.hasError('required')">Campo obligatorio</mat-error>
+      </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Email</mat-label>
-    <input matInput type="email" formControlName="email" />
-    <mat-error *ngIf="form.controls.email.hasError('required')">Campo obligatorio</mat-error>
-    <mat-error *ngIf="form.controls.email.hasError('email')">Formato inválido</mat-error>
-  </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+        <mat-error *ngIf="form.controls.email.hasError('required')">Campo obligatorio</mat-error>
+        <mat-error *ngIf="form.controls.email.hasError('email')">Formato inválido</mat-error>
+      </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Alias</mat-label>
-    <input matInput formControlName="nickname" />
-  </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Apodo</mat-label>
+        <input matInput formControlName="nickname" />
+      </mat-form-field>
+    </div>
+  </section>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Nombre</mat-label>
-    <input matInput formControlName="firstName" />
-  </mat-form-field>
+  <mat-divider></mat-divider>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Apellido</mat-label>
-    <input matInput formControlName="lastName" />
-  </mat-form-field>
+  <section class="section">
+    <div class="section-head">
+      <mat-icon>person_outline</mat-icon>
+      <div>
+        <h3>Información personal</h3>
+        <p>Datos visibles para el resto de usuarios</p>
+      </div>
+    </div>
+    <div class="section-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Teléfono</mat-label>
-    <input matInput formControlName="phoneNumber" />
-  </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>1er Apellido</mat-label>
+        <input matInput formControlName="firstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>2do Apellido</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="phoneNumber" />
+        <mat-hint>Utiliza un número de contacto válido</mat-hint>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <section class="section">
+    <div class="section-head">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <div>
+        <h3>Roles y permisos</h3>
+        <p>Define qué puede hacer dentro de la plataforma</p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!rolesError; else rolesErrorTpl">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Roles asignados</mat-label>
+        <mat-select formControlName="roles" multiple [disabled]="rolesLoading || !roleOptions.length">
+          <mat-select-trigger>
+            <ng-container *ngIf="rolesControl.value?.length; else selectPlaceholder">
+              <div class="role-trigger">
+                <mat-chip-row *ngFor="let role of rolesControl.value">
+                  {{ getRoleDisplayName(role) }}
+                </mat-chip-row>
+              </div>
+            </ng-container>
+            <ng-template #selectPlaceholder>Selecciona uno o más roles</ng-template>
+          </mat-select-trigger>
+          <mat-option *ngFor="let option of roleOptions" [value]="option.name">
+            {{ option.displayName || getRoleDisplayName(option.name) }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="rolesControl.hasError('required')">
+          Selecciona al menos un rol
+        </mat-error>
+        <mat-hint *ngIf="!rolesLoading">Puedes combinar varios roles</mat-hint>
+      </mat-form-field>
+
+      <div class="hint-row" *ngIf="rolesLoading">
+        <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+        <span>Cargando roles...</span>
+      </div>
+    </ng-container>
+
+    <ng-template #rolesErrorTpl>
+      <div class="error-card">
+        <p>{{ rolesError }}</p>
+        <button mat-stroked-button type="button" (click)="reloadRoles()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+    </ng-template>
+  </section>
 </form>
+
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="cancel()">Cancelar</button>
   <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid" form="userEditForm" class="confirm">
