@@ -12,6 +12,7 @@ import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MembershipFee, MembershipFeeService } from '../../services/membership-fee.service';
+import { User, UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-admin-fees',
@@ -34,6 +35,7 @@ export class AdminFeesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private membershipFeeService = inject(MembershipFeeService);
   private destroyRef = inject(DestroyRef);
+  private userService = inject(UserService);
 
   loading = false;
   error: string | null = null;
@@ -41,6 +43,8 @@ export class AdminFeesComponent implements OnInit {
   pendingFees: MembershipFee[] = [];
   calculatedFees: MembershipFee[] = [];
   paidFees: MembershipFee[] = [];
+  allUsers: User[] = [];
+  readonly currentYear = new Date().getFullYear();
 
   discountTargetId: number | null = null;
   discountSaving = false;
@@ -57,8 +61,13 @@ export class AdminFeesComponent implements OnInit {
     this.loadFees();
   }
 
-  get missingMembers(): MembershipFee[] {
-    return this.pendingFees.filter((fee) => fee.attendanceDays.length === 0);
+  get missingUsers(): User[] {
+    const feesByYear = new Set(
+      [...this.pendingFees, ...this.calculatedFees, ...this.paidFees]
+        .filter((fee) => fee.year === this.currentYear)
+        .map((fee) => fee.userId)
+    );
+    return this.allUsers.filter((user) => !feesByYear.has(user.id ?? -1));
   }
 
   get pendingMembers(): MembershipFee[] {
@@ -75,7 +84,7 @@ export class AdminFeesComponent implements OnInit {
 
   get summaryCards() {
     return [
-      { label: 'Sin completar', value: this.missingMembers.length, icon: 'pending_actions' },
+      { label: 'Sin completar', value: this.missingUsers.length, icon: 'pending_actions' },
       { label: 'Pendiente de revisar', value: this.pendingMembers.length, icon: 'rule' },
       { label: 'Revisados', value: this.reviewedMembers.length, icon: 'task_alt' },
       { label: 'Pagados', value: this.paidMembers.length, icon: 'payments' }
@@ -83,14 +92,27 @@ export class AdminFeesComponent implements OnInit {
   }
 
   trackByMember = (_: number, member: MembershipFee) => member.id ?? 0;
+  trackByUser = (_: number, user: User) => user.id ?? 0;
 
   memberName(member: MembershipFee): string {
     return member.user?.displayName ?? `Miembro #${member.userId}`;
   }
 
+  userDisplayName(user: User): string {
+    if (user.nickname) {
+      return user.nickname;
+    }
+    const composed = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+    if (composed) {
+      return composed;
+    }
+    return user.username;
+  }
+
   loadFees(): void {
     this.loading = true;
     forkJoin({
+      users: this.userService.list(),
       pending: this.membershipFeeService.byStatus('PENDING'),
       calculated: this.membershipFeeService.byStatus('CALCULATED'),
       paid: this.membershipFeeService.byStatus('PAID')
@@ -100,10 +122,11 @@ export class AdminFeesComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: ({ pending, calculated, paid }) => {
-          this.pendingFees = pending;
-          this.calculatedFees = calculated;
-          this.paidFees = paid;
+        next: ({ users, pending, calculated, paid }) => {
+          this.allUsers = users;
+          this.pendingFees = pending.map(this.normalizeFee);
+          this.calculatedFees = calculated.map(this.normalizeFee);
+          this.paidFees = paid.map(this.normalizeFee);
           this.error = null;
         },
         error: (err) => {
@@ -111,6 +134,12 @@ export class AdminFeesComponent implements OnInit {
         }
       });
   }
+
+  private normalizeFee = (fee: MembershipFee): MembershipFee => ({
+    ...fee,
+    attendanceDays: fee.attendanceDays ?? [],
+    discounts: fee.discounts ?? []
+  });
 
   openDiscount(member: MembershipFee): void {
     if (member.status !== 'PENDING' || !member.id) {

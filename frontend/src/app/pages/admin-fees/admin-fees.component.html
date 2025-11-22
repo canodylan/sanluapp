@@ -29,16 +29,16 @@
           <h2>Sin completar</h2>
           <p>Personas que aún no rellenan sus datos.</p>
         </div>
-        <span class="badge">{{ missingMembers.length }}</span>
+        <span class="badge">{{ missingUsers.length }}</span>
       </div>
       <mat-divider></mat-divider>
-      <ng-container *ngIf="missingMembers.length; else emptyMissing">
-        <article class="member-card member-card--missing" *ngFor="let member of missingMembers; trackBy: trackByMember">
+      <ng-container *ngIf="missingUsers.length; else emptyMissing">
+        <article class="member-card member-card--missing" *ngFor="let user of missingUsers; trackBy: trackByUser">
           <div class="member-primary">
-            <div class="avatar">{{ memberName(member).charAt(0) }}</div>
+            <div class="avatar">{{ userDisplayName(user).charAt(0) }}</div>
             <div>
-              <h3>{{ memberName(member) }}</h3>
-              <p>Sin fechas registradas para {{ member.year }}.</p>
+              <h3>{{ userDisplayName(user) }}</h3>
+              <p>{{ user.email || 'Sin email registrado' }}</p>
             </div>
           </div>
           <button mat-stroked-button color="primary" type="button" disabled>Enviar recordatorio</button>
