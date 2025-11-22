@@ -15,12 +15,35 @@
       <button mat-icon-button class="theme-btn" (click)="toggleTheme()" [attr.aria-label]="isDarkTheme ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'">
         <mat-icon>{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
-      <div class="user-pill" *ngIf="!(isMobile$ | async)">
-        <div class="avatar">{{ userInitials }}</div>
-        <div class="user-info">
-          <span class="user-name">{{ user?.nickname || user?.username || 'Usuario' }}</span>
-          <button mat-stroked-button color="accent" (click)="logout()" [disabled]="isLoggingOut">
-            {{ isLoggingOut ? 'Saliendo...' : 'Salir' }}
+      <div class="user-menu" *ngIf="!(isMobile$ | async)" (click)="$event.stopPropagation()">
+        <button type="button"
+                class="user-trigger"
+                (click)="toggleUserMenu($event)"
+                [attr.aria-label]="userMenuOpen ? 'Cerrar menú de usuario' : 'Abrir menú de usuario'"
+                [attr.aria-expanded]="userMenuOpen">
+          <span class="avatar">{{ userInitials }}</span>
+          <mat-icon class="chevron" [class.open]="userMenuOpen">expand_more</mat-icon>
+        </button>
+        <div class="user-dropdown" *ngIf="userMenuOpen">
+          <div class="user-dropdown-header">
+            <span class="user-name">{{ user?.nickname || user?.username || 'Usuario' }}</span>
+          </div>
+          <button type="button"
+                  class="user-dropdown-item"
+                  (click)="navigateTo('/admin')"
+                  *ngIf="hasAdminAccess">
+            Panel de administración
+          </button>
+          <button type="button"
+                  class="user-dropdown-item"
+                  (click)="navigateTo('/settings')">
+            Ajustes
+          </button>
+          <button type="button"
+                  class="user-dropdown-item logout"
+                  (click)="onLogoutFromMenu()"
+                  [disabled]="isLoggingOut">
+            {{ isLoggingOut ? 'Saliendo...' : 'Cerrar sesión' }}
           </button>
         </div>
       </div>

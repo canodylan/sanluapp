@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,6 +33,8 @@ export class DashboardLayoutComponent {
   readonly trackByLink = (_: number, link: NavLink) => link.route;
   readonly isMobile$ = this.deviceService.isMobile$;
   mobileMenuOpen = false;
+  userMenuOpen = false;
+  readonly hasAdminAccess = this.authService.hasRole('ADMIN');
 
   constructor() {
     this.themeService.isDarkTheme$
@@ -43,9 +45,7 @@ export class DashboardLayoutComponent {
   private buildNavLinks(): NavLink[] {
     // Build once so RouterLinkActive does not thrash the view
     const links: NavLink[] = [{ label: 'Cuotas', route: '/quota' }];
-    if (this.authService.hasRole('ADMIN')) {
-      links.push({ label: 'Admin', route: '/admin' });
-    }
+    
     return links;
   }
 
@@ -73,13 +73,33 @@ export class DashboardLayoutComponent {
       });
   }
 
+  onLogoutFromMenu(): void {
+    this.userMenuOpen = false;
+    this.logout();
+  }
+
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  toggleUserMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.userMenuOpen = !this.userMenuOpen;
+  }
+
+  navigateTo(route: string): void {
+    this.userMenuOpen = false;
+    this.router.navigate([route]);
   }
 
   handleNavSelection(): void {
     if (this.deviceService.currentDeviceType === 'mobile') {
       this.mobileMenuOpen = false;
     }
+  }
+
+  @HostListener('document:click')
+  closeUserMenu(): void {
+    this.userMenuOpen = false;
   }
 }
