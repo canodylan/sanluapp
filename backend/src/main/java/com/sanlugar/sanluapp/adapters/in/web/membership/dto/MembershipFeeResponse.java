@@ -8,6 +8,7 @@ import java.util.List;
 import com.sanlugar.sanluapp.domain.model.MembershipFee;
 import com.sanlugar.sanluapp.domain.model.MembershipFeeDay;
 import com.sanlugar.sanluapp.domain.model.MembershipFeeDiscount;
+import com.sanlugar.sanluapp.domain.model.MembershipFeeUser;
 
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class MembershipFeeResponse {
     private LocalDateTime updatedAt;
     private List<AttendanceDayDto> attendanceDays;
     private List<DiscountDto> discounts;
+    private UserSummaryDto user;
 
     public static MembershipFeeResponse from(MembershipFee fee) {
         return MembershipFeeResponse.builder()
@@ -48,6 +50,7 @@ public class MembershipFeeResponse {
                 .discounts(fee.getDiscounts().stream()
                         .map(DiscountDto::from)
                         .toList())
+                .user(UserSummaryDto.from(fee.getUser(), fee.getUserId()))
                 .build();
     }
 
@@ -79,6 +82,34 @@ public class MembershipFeeResponse {
                     .concept(discount.getConcept())
                     .amount(discount.getAmount())
                     .createdAt(discount.getCreatedAt())
+                    .build();
+        }
+    }
+
+    @Data
+    @Builder
+    public static class UserSummaryDto {
+        private Long id;
+        private String username;
+        private String nickname;
+        private String firstName;
+        private String lastName;
+        private String displayName;
+
+        public static UserSummaryDto from(MembershipFeeUser user, Long fallbackId) {
+            if (user == null) {
+                return UserSummaryDto.builder()
+                        .id(fallbackId)
+                        .displayName("Miembro " + (fallbackId != null ? ("#" + fallbackId) : "desconocido"))
+                        .build();
+            }
+            return UserSummaryDto.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .nickname(user.getNickname())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .displayName(user.getDisplayName())
                     .build();
         }
     }

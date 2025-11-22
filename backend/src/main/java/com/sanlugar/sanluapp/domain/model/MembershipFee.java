@@ -26,6 +26,7 @@ public class MembershipFee {
     private LocalDateTime paidAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private MembershipFeeUser user;
 
     @Builder.Default
     private Set<MembershipFeeDay> attendanceDays = new LinkedHashSet<>();

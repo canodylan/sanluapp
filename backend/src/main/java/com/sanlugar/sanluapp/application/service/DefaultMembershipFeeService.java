@@ -66,6 +66,10 @@ public class DefaultMembershipFeeService implements MembershipFeeService {
         MembershipFee fee = membershipFeeRepository.findById(membershipFeeId)
                 .orElseThrow(() -> new IllegalArgumentException("Cuota no encontrada"));
 
+        if (fee.getStatus() != MembershipFeeStatus.PENDING) {
+            throw new IllegalStateException("Solo se pueden aplicar descuentos a cuotas pendientes de revisión");
+        }
+
         MembershipFeeDiscount discount = MembershipFeeDiscount.builder()
                 .concept(concept)
                 .amount(amount)
@@ -73,7 +77,6 @@ public class DefaultMembershipFeeService implements MembershipFeeService {
                 .build();
 
         fee.getDiscounts().add(discount);
-        fee.setStatus(MembershipFeeStatus.CALCULATED);
         fee.setUpdatedAt(LocalDateTime.now());
 
         MembershipFee saved = membershipFeeRepository.save(fee);
@@ -98,9 +101,45 @@ public class DefaultMembershipFeeService implements MembershipFeeService {
                 .map(MembershipFeeDiscount::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         fee.setDiscountTotal(totalDiscount);
-        fee.setFinalAmount(fee.getBaseAmount().subtract(totalDiscount));
-        if (!fee.getDiscounts().isEmpty() && fee.getStatus() == MembershipFeeStatus.PENDING) {
-            fee.setStatus(MembershipFeeStatus.CALCULATED);
+        BigDecimal finalAmount = fee.getBaseAmount().subtract(totalDiscount);
+        if (finalAmount.signum() < 0) {
+            finalAmount = BigDecimal.ZERO;
+        }
+        fee.setFinalAmount(finalAmount);
+        fee.setUpdatedAt(LocalDateTime.now());
+
+        return membershipFeeRepository.save(fee);
+    }
+
+    @Override
+    public MembershipFee markFeeAsCalculated(Long membershipFeeId) {
+        MembershipFee fee = membershipFeeRepository.findById(membershipFeeId)
+                .orElseThrow(() -> new IllegalArgumentException("Cuota no encontrada"));
+
+        if (fee.getStatus() != MembershipFeeStatus.PENDING) {
+            throw new IllegalStateException("Solo se pueden marcar como revisadas las cuotas pendientes");
+        }
+
+        fee.setStatus(MembershipFeeStatus.CALCULATED);
+        fee.setUpdatedAt(LocalDateTime.now());
+
+        return membershipFeeRepository.save(fee);
+    }
+
+    @Override
+    public MembershipFee reopenForReview(Long membershipFeeId, boolean resetDiscounts) {
+        MembershipFee fee = membershipFeeRepository.findById(membershipFeeId)
+                .orElseThrow(() -> new IllegalArgumentException("Cuota no encontrada"));
+
+        if (fee.getStatus() != MembershipFeeStatus.CALCULATED) {
+            throw new IllegalStateException("Solo se pueden reabrir cuotas ya calculadas");
+        }
+
+        fee.setStatus(MembershipFeeStatus.PENDING);
+        if (resetDiscounts) {
+            fee.getDiscounts().clear();
+            fee.setDiscountTotal(BigDecimal.ZERO);
+            fee.setFinalAmount(fee.getBaseAmount());
         }
         fee.setUpdatedAt(LocalDateTime.now());
 

@@ -19,6 +19,7 @@ import com.sanlugar.sanluapp.adapters.in.web.membership.dto.ApplyDiscountRequest
 import com.sanlugar.sanluapp.adapters.in.web.membership.dto.CreateMembershipFeeRequest;
 import com.sanlugar.sanluapp.adapters.in.web.membership.dto.MembershipFeeResponse;
 import com.sanlugar.sanluapp.adapters.in.web.membership.dto.PayMembershipFeeRequest;
+import com.sanlugar.sanluapp.adapters.in.web.membership.dto.ReopenMembershipFeeRequest;
 import com.sanlugar.sanluapp.application.service.MembershipFeeService;
 import com.sanlugar.sanluapp.domain.model.MembershipFee;
 import com.sanlugar.sanluapp.domain.model.MembershipFeeStatus;
@@ -54,6 +55,20 @@ public class MembershipFeeController {
         return ResponseEntity.ok(MembershipFeeResponse.from(fee));
     }
 
+    @PatchMapping("/{id}/calculate")
+    public ResponseEntity<MembershipFeeResponse> markAsCalculated(@PathVariable Long id) {
+        MembershipFee fee = membershipFeeService.markFeeAsCalculated(id);
+        return ResponseEntity.ok(MembershipFeeResponse.from(fee));
+    }
+
+    @PatchMapping("/{id}/reopen")
+    public ResponseEntity<MembershipFeeResponse> reopenForReview(@PathVariable Long id,
+            @RequestBody(required = false) ReopenMembershipFeeRequest request) {
+        boolean resetDiscounts = request == null || Boolean.TRUE.equals(request.getResetDiscounts());
+        MembershipFee fee = membershipFeeService.reopenForReview(id, resetDiscounts);
+        return ResponseEntity.ok(MembershipFeeResponse.from(fee));
+    }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<MembershipFeeResponse>> findByUser(@PathVariable Long userId) {
         List<MembershipFeeResponse> response = membershipFeeService.getFeesForUser(userId).stream()
@@ -70,8 +85,8 @@ public class MembershipFeeController {
         return ResponseEntity.ok(fees.stream().map(MembershipFeeResponse::from).toList());
     }
 
-        @ExceptionHandler(IllegalArgumentException.class)
-        public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<String> handleDomainErrors(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

@@ -23,6 +23,14 @@ public interface MembershipFeeService {
         return markFeeAsPaid(membershipFeeId, null);
     }
 
+    MembershipFee markFeeAsCalculated(Long membershipFeeId);
+
+    MembershipFee reopenForReview(Long membershipFeeId, boolean resetDiscounts);
+
+    default MembershipFee reopenForReview(Long membershipFeeId) {
+        return reopenForReview(membershipFeeId, false);
+    }
+
     List<MembershipFee> getFeesForUser(Long userId);
 
     List<MembershipFee> getFeesByStatus(MembershipFeeStatus status);

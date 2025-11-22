@@ -17,6 +17,15 @@ export interface MembershipFeeDiscount {
   createdAt: string;
 }
 
+export interface MembershipFeeUserSummary {
+  id?: number;
+  username?: string;
+  nickname?: string;
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
+}
+
 export interface MembershipFee {
   id?: number;
   userId: number;
@@ -31,6 +40,7 @@ export interface MembershipFee {
   updatedAt?: string;
   attendanceDays: MembershipFeeDay[];
   discounts: MembershipFeeDiscount[];
+  user?: MembershipFeeUserSummary;
 }
 
 export interface CreateMembershipFeePayload {
@@ -65,7 +75,16 @@ export class MembershipFeeService {
     return this.http.get<MembershipFee[]>(`${this.base}/user/${userId}`);
   }
 
-  byStatus(status: MembershipFeeStatus = 'PENDING'): Observable<MembershipFee[]> {
-    return this.http.get<MembershipFee[]>(`${this.base}?status=${status}`);
+  byStatus(status?: MembershipFeeStatus): Observable<MembershipFee[]> {
+    const url = status ? `${this.base}?status=${status}` : this.base;
+    return this.http.get<MembershipFee[]>(url);
+  }
+
+  markAsCalculated(id: number): Observable<MembershipFee> {
+    return this.http.patch<MembershipFee>(`${this.base}/${id}/calculate`, {});
+  }
+
+  reopen(id: number, resetDiscounts = true): Observable<MembershipFee> {
+    return this.http.patch<MembershipFee>(`${this.base}/${id}/reopen`, { resetDiscounts });
   }
 }

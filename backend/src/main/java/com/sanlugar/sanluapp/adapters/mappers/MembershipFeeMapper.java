@@ -11,6 +11,7 @@ import com.sanlugar.sanluapp.domain.model.MembershipFee;
 import com.sanlugar.sanluapp.domain.model.MembershipFeeDay;
 import com.sanlugar.sanluapp.domain.model.MembershipFeeDiscount;
 import com.sanlugar.sanluapp.domain.model.MembershipFeeStatus;
+import com.sanlugar.sanluapp.domain.model.MembershipFeeUser;
 
 public final class MembershipFeeMapper {
 
@@ -32,6 +33,7 @@ public final class MembershipFeeMapper {
                 .paidAt(entity.getPaidAt())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .user(toUser(entity.getUser()))
                 .attendanceDays((entity.getAttendanceDays() == null ? java.util.stream.Stream.<MembershipFeeDayEntity>empty()
                         : entity.getAttendanceDays().stream())
                         .map(day -> MembershipFeeDay.builder()
@@ -101,4 +103,17 @@ public final class MembershipFeeMapper {
 
         return entity;
     }
+
+        private static MembershipFeeUser toUser(UserEntity userEntity) {
+                if (userEntity == null) {
+                        return null;
+                }
+                return MembershipFeeUser.builder()
+                                .id(userEntity.getId())
+                                .username(userEntity.getUsername())
+                                .nickname(userEntity.getNickname())
+                                .firstName(userEntity.getFirstName())
+                                .lastName(userEntity.getLastName())
+                                .build();
+        }
 }

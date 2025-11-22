@@ -13,7 +13,15 @@ export const routes: Routes = [
 			{ path: 'home', redirectTo: 'main', pathMatch: 'full' },
 			{ path: 'main', loadComponent: () => import('./pages/main/main.component').then(m => m.MainComponent) },
 			{ path: 'quota', loadComponent: () => import('./pages/quota/quota.component').then(m => m.QuotaComponent) },
-			{ path: 'admin', loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent), canActivate: [adminGuard] },
+			{
+				path: 'admin',
+				canActivate: [adminGuard],
+				children: [
+					{ path: '', loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent) },
+					{ path: 'members', loadComponent: () => import('./pages/admin-members/admin-members.component').then(m => m.AdminMembersComponent), canActivate: [adminGuard] },
+					{ path: 'fees', loadComponent: () => import('./pages/admin-fees/admin-fees.component').then(m => m.AdminFeesComponent), canActivate: [adminGuard] }
+				]
+			},
 			{ path: 'register', loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent), canActivate: [adminGuard] }
 		]
 	},

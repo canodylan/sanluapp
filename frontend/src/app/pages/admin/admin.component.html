@@ -1,13 +1,36 @@
-<div class="admin-wrapper">
-  <mat-card class="admin-card">
-    <div class="actions">
-      <div>
-        <p class="eyebrow">Panel de administración</p>
-        <h2>Usuarios registrados</h2>
-        <p>Gestiona altas, bajas y permisos en un solo lugar.</p>
+<div class="admin-menu">
+  <header class="menu-header">
+    <p class="eyebrow">Panel de administración</p>
+    <h1>¿Qué deseas administrar?</h1>
+    <p>Accede a las herramientas internas para gestionar la comunidad.</p>
+  </header>
+
+  <div class="menu-grid">
+    <mat-card class="menu-card">
+      <div class="menu-card__body">
+        <mat-icon class="menu-card__icon" fontIcon="group"></mat-icon>
+        <div>
+          <h2>Miembros</h2>
+          <p>Gestiona usuarios, roles y accesos.</p>
+        </div>
       </div>
-      <button mat-raised-button color="accent" routerLink="/register">Registrar usuario</button>
-    </div>
-    <app-user-list></app-user-list>
-  </mat-card>
+      <button mat-raised-button color="primary" routerLink="/admin/members">Entrar</button>
+    </mat-card>
+
+    <mat-card class="menu-card">
+      <div class="menu-card__body">
+        <mat-icon class="menu-card__icon" fontIcon="payments"></mat-icon>
+        <div>
+          <h2>Cuotas</h2>
+          <p>Administra los importes y el estado de pagos.</p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" routerLink="/admin/fees">Entrar</button>
+    </mat-card>
+  </div>
+
+  <div class="menu-helper">
+    <p>¿Necesitas una nueva sección? Define el proceso y la añadiremos al panel.</p>
+    <button mat-stroked-button color="accent" routerLink="/register">Registrar nuevo miembro</button>
+  </div>
 </div>
