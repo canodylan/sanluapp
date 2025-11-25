@@ -13,6 +13,7 @@ export const routes: Routes = [
 			{ path: 'home', redirectTo: 'main', pathMatch: 'full' },
 			{ path: 'main', loadComponent: () => import('./pages/main/main.component').then(m => m.MainComponent) },
 			{ path: 'quota', loadComponent: () => import('./pages/quota/quota.component').then(m => m.QuotaComponent) },
+			{ path: 'settings', loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent) },
 			{
 				path: 'admin',
 				canActivate: [adminGuard],

@@ -7,13 +7,13 @@ export interface User {
   id?: number;
   username: string;
   email: string;
-  nickname?: string;
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
-  birthday?: string;
-  joinAt?: string;
+  nickname?: string | null;
+  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phoneNumber?: string | null;
+  birthday?: string | null;
+  joinAt?: string | null;
   roles?: string[];
 }
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, AuthenticatedUser } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DeviceService } from '../../services/device.service';
@@ -26,7 +26,7 @@ export class DashboardLayoutComponent {
   private router = inject(Router);
   private deviceService = inject(DeviceService);
 
-  user = this.authService.getCurrentUser();
+  user: AuthenticatedUser | null = this.authService.getCurrentUser();
   isDarkTheme = false;
   isLoggingOut = false;
   navLinks = this.buildNavLinks();
@@ -34,19 +34,28 @@ export class DashboardLayoutComponent {
   readonly isMobile$ = this.deviceService.isMobile$;
   mobileMenuOpen = false;
   userMenuOpen = false;
-  readonly hasAdminAccess = this.authService.hasRole('ADMIN');
 
   constructor() {
     this.themeService.isDarkTheme$
       .pipe(takeUntilDestroyed())
       .subscribe((isDark) => (this.isDarkTheme = isDark));
+
+    this.authService.user$
+      .pipe(takeUntilDestroyed())
+      .subscribe((user) => (this.user = user));
   }
 
   private buildNavLinks(): NavLink[] {
     // Build once so RouterLinkActive does not thrash the view
-    const links: NavLink[] = [{ label: 'Cuotas', route: '/quota' }];
+    const links: NavLink[] = [
+      { label: 'Cuotas', route: '/quota' },
+    ];
     
     return links;
+  }
+
+  get hasAdminAccess(): boolean {
+    return this.authService.hasRole('ADMIN');
   }
 
   get userInitials(): string {

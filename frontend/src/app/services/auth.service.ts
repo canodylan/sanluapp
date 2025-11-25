@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { finalize, map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -23,10 +23,12 @@ export interface AuthenticatedUser {
   id?: number;
   username: string;
   email: string;
-  nickname?: string;
-  name?: string;
-  firstName?: string;
-  lastName?: string;
+  nickname?: string | null;
+  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phoneNumber?: string | null;
+  birthday?: string | null;
   roles?: string[];
 }
 
@@ -46,6 +48,8 @@ export class AuthService {
   private readonly accessKey = 'sanluapp_access_token';
   private readonly refreshKey = 'sanluapp_refresh_token';
   private readonly userKey = 'sanluapp_user';
+  private readonly userSubject = new BehaviorSubject<AuthenticatedUser | null>(this.readStoredUser());
+  readonly user$ = this.userSubject.asObservable();
   private refreshInFlight$: Observable<string> | null = null;
 
   login(username: string, password: string): Observable<LoginResponse> {
@@ -102,16 +106,11 @@ export class AuthService {
 
   saveUser(user: AuthenticatedUser): void {
     localStorage.setItem(this.userKey, JSON.stringify(user));
+    this.userSubject.next(user);
   }
 
   getCurrentUser(): AuthenticatedUser | null {
-    const stored = localStorage.getItem(this.userKey);
-    if (!stored) return null;
-    try {
-      return JSON.parse(stored) as AuthenticatedUser;
-    } catch {
-      return null;
-    }
+    return this.userSubject.value;
   }
 
   getAccessToken(): string | null {
@@ -126,6 +125,7 @@ export class AuthService {
     localStorage.removeItem(this.accessKey);
     localStorage.removeItem(this.refreshKey);
     localStorage.removeItem(this.userKey);
+    this.userSubject.next(null);
   }
 
   isAuthRequest(url: string): boolean {
@@ -180,5 +180,15 @@ export class AuthService {
   private handleAuthSuccess(response: LoginResponse): void {
     this.saveTokens(response.accessToken, response.refreshToken);
     this.saveUser(response.user);
+  }
+
+  private readStoredUser(): AuthenticatedUser | null {
+    const stored = localStorage.getItem(this.userKey);
+    if (!stored) return null;
+    try {
+      return JSON.parse(stored) as AuthenticatedUser;
+    } catch {
+      return null;
+    }
   }
 }
