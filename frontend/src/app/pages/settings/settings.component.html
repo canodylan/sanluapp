@@ -1,0 +1,62 @@
+<div class="settings-shell">
+  <mat-card class="settings-card" *ngIf="!loadingProfile; else loadingState">
+    <header class="card-header">
+      <p class="eyebrow">Tu perfil</p>
+      <h1>Ajustes de cuenta</h1>
+      <p class="subtitle">Actualiza los datos que usaremos para identificarte y ponerte al día.</p>
+    </header>
+
+    <section class="user-meta" *ngIf="currentUserData as user">
+      <div class="meta-item">
+        <span class="meta-label">Usuario</span>
+        <span class="meta-value">{{ user.username }}</span>
+      </div>
+      <div class="meta-item" *ngIf="user.joinAt">
+        <span class="meta-label">Miembro desde</span>
+        <span class="meta-value">{{ user.joinAt | date: 'd/MMM/y' }}</span>
+      </div>
+    </section>
+
+    <form class="settings-form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nick</mat-label>
+          <input matInput formControlName="nickname" maxlength="50" placeholder="Ej. Dyla" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="phoneNumber" maxlength="20" placeholder="Ej. +34 600 123 456" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-row">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" required />
+          <mat-error *ngIf="form.controls.email.hasError('required')">El email es obligatorio.</mat-error>
+          <mat-error *ngIf="form.controls.email.hasError('email')">Ingresa un email válido.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cumpleaños</mat-label>
+          <input matInput type="date" formControlName="birthday" [max]="today" />
+        </mat-form-field>
+      </div>
+
+      <p class="feedback error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="feedback success" *ngIf="successMessage">{{ successMessage }}</p>
+
+      <div class="actions">
+        <button mat-button type="button" (click)="reset()" [disabled]="loadingSave || !currentUserData">Restablecer</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitDisabled">
+          {{ loadingSave ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <ng-template #loadingState>
+    <mat-card class="settings-card loading-card">
+      <p>Cargando tus ajustes...</p>
+    </mat-card>
+  </ng-template>
+</div>

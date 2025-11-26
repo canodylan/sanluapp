@@ -1,0 +1,134 @@
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  padding: clamp(24px, 6vw, 48px) clamp(16px, 4vw, 48px);
+  background: linear-gradient(180deg, rgba(25, 118, 210, 0.15) 0%, rgba(25, 118, 210, 0.03) 100%);
+}
+
+.login-shell.is-mobile {
+  padding-bottom: 64px;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 32px;
+  padding: clamp(24px, 5vw, 48px);
+  background: radial-gradient(circle at top left, rgba(25, 118, 210, 0.2), transparent 55%),
+    linear-gradient(135deg, rgba(25, 118, 210, 0.15), rgba(25, 118, 210, 0.05));
+  border: 1px solid rgba(25, 118, 210, 0.15);
+  min-height: 320px;
+}
+
+.brand-content {
+  max-width: 420px;
+  text-align: left;
+  color: var(--mat-primary-color);
+
+  h1 {
+    margin: 12px 0;
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    color: var(--mat-text-secondary);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-text-secondary);
+}
+
+.login-panel {
+  display: flex;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px clamp(24px, 4vw, 40px);
+  border-radius: 28px !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(25, 118, 210, 0.08);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--mat-primary-color);
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: var(--mat-text-secondary);
+  }
+}
+
+.login-field {
+  width: 100%;
+  margin-bottom: 16px;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    border-radius: 18px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    padding: 0 8px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding: 12px 0 10px;
+    min-height: 48px;
+  }
+}
+
+.login-button {
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 14px !important;
+}
+
+.error {
+  color: #c62828;
+  margin: 8px 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+.login-input {
+  font-size: 16px;
+}
+
+@media (min-width: 960px) {
+  .login-shell {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .login-brand,
+  .login-panel {
+    flex: 1;
+  }
+}

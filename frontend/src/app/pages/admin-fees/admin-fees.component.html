@@ -1,0 +1,209 @@
+<div class="fees-admin">
+  <header class="page-header">
+    <p class="eyebrow">Panel de administración</p>
+    <div>
+      <h1>Seguimiento de cuotas</h1>
+      <p>Visualiza quién falta por completar, quién está pendiente de revisión, los ya revisados y los pagos confirmados.</p>
+    </div>
+  </header>
+
+  <div class="status-row" *ngIf="loading || error">
+    <p *ngIf="loading">Cargando cuotas...</p>
+    <p class="error" *ngIf="!loading && error">{{ error }}</p>
+  </div>
+
+  <section class="summary-grid">
+    <article class="summary-card" *ngFor="let item of summaryCards">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <div>
+        <p>{{ item.label }}</p>
+        <strong>{{ item.value }}</strong>
+      </div>
+    </article>
+  </section>
+
+  <div class="board">
+    <mat-card class="board-column">
+      <div class="column-header">
+        <div>
+          <h2>Sin completar</h2>
+          <p>Personas que aún no rellenan sus datos.</p>
+        </div>
+        <span class="badge">{{ missingUsers.length }}</span>
+      </div>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="missingUsers.length; else emptyMissing">
+        <article class="member-card member-card--missing" *ngFor="let user of missingUsers; trackBy: trackByUser">
+          <div class="member-primary">
+            <div class="avatar">{{ userDisplayName(user).charAt(0) }}</div>
+            <div>
+              <h3>{{ userDisplayName(user) }}</h3>
+              <p>{{ user.email || 'Sin email registrado' }}</p>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" type="button" disabled>Enviar recordatorio</button>
+        </article>
+      </ng-container>
+      <ng-template #emptyMissing>
+        <p class="empty-state">Todos los miembros han informado sus cuotas.</p>
+      </ng-template>
+    </mat-card>
+
+    <mat-card class="board-column">
+      <div class="column-header">
+        <div>
+          <h2>Pendiente de revisión</h2>
+          <p>Cuotas calculadas a la espera de validar los días.</p>
+        </div>
+        <span class="badge">{{ pendingMembers.length }}</span>
+      </div>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="pendingMembers.length; else emptyPending">
+        <article class="member-card member-card--pending" *ngFor="let member of pendingMembers; trackBy: trackByMember">
+          <div class="member-primary">
+            <div>
+              <h3>{{ memberName(member) }}</h3>
+              <p>Importe base: <strong>{{ member.baseAmount | currency:'EUR':'symbol':'1.0-0' }}</strong></p>
+            </div>
+            <div class="amount-pill">
+              <span>Importe final</span>
+              <strong>{{ member.finalAmount | currency:'EUR':'symbol':'1.0-0' }}</strong>
+            </div>
+          </div>
+
+          <mat-chip-listbox class="days-chips" aria-label="Días confirmados">
+            <mat-chip selected color="primary" *ngFor="let day of member.attendanceDays">{{ day.attendanceDate | date:'EEE d/MM' }}</mat-chip>
+          </mat-chip-listbox>
+
+          <div class="discount-list" *ngIf="member.discounts.length">
+            <p class="discount-title">Descuentos aplicados</p>
+            <ul>
+              <li *ngFor="let discount of member.discounts">
+                {{ discount.concept }}
+                <span>-{{ discount.amount | currency:'EUR':'symbol':'1.0-0' }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="member-actions">
+            <button mat-stroked-button color="accent" type="button" (click)="openDiscount(member)"
+              [disabled]="discountSaving">Añadir descuento</button>
+            <button mat-flat-button color="primary" type="button" (click)="markAsReviewed(member)"
+              [disabled]="isReviewing(member)">
+              {{ isReviewing(member) ? 'Procesando...' : 'Marcar como revisado' }}
+            </button>
+          </div>
+
+          <div class="discount-form" *ngIf="discountTargetId === member.id">
+            <form [formGroup]="discountForm" (ngSubmit)="saveDiscount(member)">
+              <mat-form-field appearance="outline">
+                <mat-label>Concepto</mat-label>
+                <input matInput formControlName="concept" />
+                <mat-error *ngIf="discountForm.controls.concept.hasError('required')">Campo obligatorio</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Importe</mat-label>
+                <input matInput type="number" min="0" step="1" formControlName="amount" />
+                <span matTextSuffix>€</span>
+                <mat-error *ngIf="discountForm.controls.amount.hasError('min')">Debe ser mayor a 0</mat-error>
+              </mat-form-field>
+              <div class="discount-actions">
+                <button mat-button type="button" (click)="cancelDiscount()">Cancelar</button>
+                <button mat-flat-button color="primary" type="submit" [disabled]="discountForm.invalid || discountSaving">
+                  {{ discountSaving ? 'Guardando...' : 'Guardar' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </article>
+      </ng-container>
+      <ng-template #emptyPending>
+        <p class="empty-state">No hay cuotas pendientes de revisar.</p>
+      </ng-template>
+    </mat-card>
+  </div>
+
+  <div class="board">
+    <mat-card class="board-column">
+      <div class="column-header">
+        <div>
+          <h2>Revisados</h2>
+          <p>Listos para notificar el pago.</p>
+        </div>
+        <span class="badge">{{ reviewedMembers.length }}</span>
+      </div>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="reviewedMembers.length; else emptyReviewed">
+        <article class="member-card member-card--reviewed" *ngFor="let member of reviewedMembers; trackBy: trackByMember">
+          <div class="member-primary">
+            <div>
+              <h3>{{ memberName(member) }}</h3>
+              <p>Actualizado el {{ member.updatedAt | date:'dd/MM HH:mm' }}</p>
+            </div>
+            <div class="amount-pill">
+              <span>A pagar</span>
+              <strong>{{ member.finalAmount | currency:'EUR':'symbol':'1.0-0' }}</strong>
+            </div>
+          </div>
+
+          <div class="discount-list" *ngIf="member.discounts.length">
+            <p class="discount-title">Descuentos</p>
+            <ul>
+              <li *ngFor="let discount of member.discounts">
+                {{ discount.concept }}
+                <span>-{{ discount.amount | currency:'EUR':'symbol':'1.0-0' }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="member-actions">
+            <button mat-stroked-button color="accent" type="button" (click)="reopen(member)"
+              [disabled]="isReopening(member)">
+              {{ isReopening(member) ? 'Reabriendo...' : 'Reabrir para editar' }}
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="markAsPaid(member)"
+              [disabled]="isPaying(member)">
+              {{ isPaying(member) ? 'Registrando...' : 'Registrar pago' }}
+            </button>
+          </div>
+        </article>
+      </ng-container>
+      <ng-template #emptyReviewed>
+        <p class="empty-state">Todavía no hay cuotas revisadas.</p>
+      </ng-template>
+    </mat-card>
+
+    <mat-card class="board-column">
+      <div class="column-header">
+        <div>
+          <h2>Pagados</h2>
+          <p>Pagos confirmados por tesorería.</p>
+        </div>
+        <span class="badge">{{ paidMembers.length }}</span>
+      </div>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="paidMembers.length; else emptyPaid">
+        <article class="member-card member-card--paid" *ngFor="let member of paidMembers; trackBy: trackByMember">
+          <div class="member-primary">
+            <div>
+              <h3>{{ memberName(member) }}</h3>
+              <p>Pagado el {{ member.paidAt | date:'dd/MM/yyyy' }}</p>
+            </div>
+            <div class="amount-pill">
+              <span>Total abonado</span>
+              <strong>{{ member.finalAmount | currency:'EUR':'symbol':'1.0-0' }}</strong>
+            </div>
+          </div>
+
+          <div class="paid-days" *ngIf="member.attendanceDays.length">
+            <mat-icon>event</mat-icon>
+            <span>{{ member.attendanceDays.length }} día(s) confirmados</span>
+          </div>
+        </article>
+      </ng-container>
+      <ng-template #emptyPaid>
+        <p class="empty-state">Aún no se registran pagos.</p>
+      </ng-template>
+    </mat-card>
+  </div>
+</div>

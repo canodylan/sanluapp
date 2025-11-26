@@ -1,0 +1,41 @@
+<mat-card class="user-list-card">
+  <ng-container *ngIf="users$ | async as users; else loading">
+    <div *ngIf="users.length; else empty" class="user-list">
+      <div *ngFor="let u of users" class="user-row">
+        <div class="user-meta">
+          <div class="user-primary">
+            <p class="user-name">{{ u.nickname || u.username }}</p>
+            <p class="user-email">{{ u.email }}</p>
+          </div>
+          <div class="user-roles" *ngIf="u.roles?.length; else noRole">
+            {{ u.roles?.join(', ') }}
+          </div>
+          <ng-template #noRole>
+            <div class="user-roles muted">Sin rol</div>
+          </ng-template>
+        </div>
+        <div class="user-actions">
+          <button mat-icon-button color="primary" aria-label="Editar usuario" (click)="onEdit(u)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            aria-label="Eliminar usuario"
+            (click)="onDelete(u)"
+            [disabled]="deletingId === u.id"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loading>
+    <p class="state-text">Cargando usuarios...</p>
+  </ng-template>
+  <ng-template #empty>
+    <p class="state-text">No se encontraron usuarios.</p>
+  </ng-template>
+  <p *ngIf="error" class="state-text error">Error al cargar usuarios: {{ error }}</p>
+</mat-card>
