@@ -15,7 +15,6 @@ public class JwtProperties {
     }
 
     public void setSecret(String secret) {
-        System.out.println("Setting JWT secret: " + secret);
         this.secret = secret;
     }
 
