@@ -1,8 +1,8 @@
 {
   "name": "Sanluapp",
   "short_name": "Sanluapp",
-  "theme_color": "#1976d2",
-  "background_color": "#ffffff",
+  "theme_color": "#cf271b",
+  "background_color": "#f6f7fb",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

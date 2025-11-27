@@ -3,7 +3,7 @@ import { authGuard, adminGuard } from './guards/auth.guard';
 import { DashboardLayoutComponent } from './components/dashboard-layout/dashboard-layout.component';
 
 export const routes: Routes = [
-	{ path: '', redirectTo: 'login', pathMatch: 'full' },
+	{ path: '', redirectTo: 'main', pathMatch: 'full' },
 	{ path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) },
 	{
 		path: '',
