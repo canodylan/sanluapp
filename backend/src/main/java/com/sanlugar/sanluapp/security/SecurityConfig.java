@@ -1,7 +1,8 @@
 package com.sanlugar.sanluapp.security;
 
-import java.util.List;
+import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,18 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
+
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String[] allowedOrigins;
+
+    @Value("${app.cors.allowed-methods:GET,POST,PUT,PATCH,DELETE,OPTIONS}")
+    private String[] allowedMethods;
+
+    @Value("${app.cors.allowed-headers:*}")
+    private String[] allowedHeaders;
+
+    @Value("${app.cors.allow-credentials:true}")
+    private boolean allowCredentials;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,10 +52,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedMethods(Arrays.asList(allowedMethods));
+        configuration.setAllowedHeaders(Arrays.asList(allowedHeaders));
+        configuration.setAllowCredentials(allowCredentials);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
