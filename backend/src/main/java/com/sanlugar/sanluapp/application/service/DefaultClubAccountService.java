@@ -30,7 +30,12 @@ public class DefaultClubAccountService implements ClubAccountService {
         account.setId(null);
         account.setCreatedAt(account.getCreatedAt() == null ? LocalDateTime.now() : account.getCreatedAt());
         account.setCurrentBalance(account.getCurrentBalance() == null ? BigDecimal.ZERO : account.getCurrentBalance());
-        return clubAccountRepository.save(account);
+        boolean requestedPrimary = Boolean.TRUE.equals(account.getPrimary());
+        ClubAccount saved = clubAccountRepository.save(account);
+        if (requestedPrimary || !existsPrimary()) {
+            return setPrimary(saved.getId());
+        }
+        return saved;
     }
 
     @Override
@@ -49,8 +54,23 @@ public class DefaultClubAccountService implements ClubAccountService {
         if (account.getCurrentBalance() != null) {
             existing.setCurrentBalance(account.getCurrentBalance());
         }
+        ClubAccount updated = clubAccountRepository.save(existing);
+        if (Boolean.TRUE.equals(account.getPrimary())) {
+            return setPrimary(updated.getId());
+        }
+        return updated;
+    }
 
-        return clubAccountRepository.save(existing);
+    @Override
+    public ClubAccount setPrimary(Long id) {
+        ClubAccount target = clubAccountRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada"));
+
+        clubAccountRepository.clearPrimaryExcept(id);
+        clubAccountRepository.markPrimary(id);
+
+        target.setPrimary(Boolean.TRUE);
+        return target;
     }
 
     @Override
@@ -74,5 +94,10 @@ public class DefaultClubAccountService implements ClubAccountService {
         if (account == null || !StringUtils.hasText(account.getName())) {
             throw new IllegalArgumentException("El nombre de la cuenta es obligatorio");
         }
+    }
+
+    private boolean existsPrimary() {
+        return clubAccountRepository.findAll().stream()
+                .anyMatch(account -> Boolean.TRUE.equals(account.getPrimary()));
     }
 }

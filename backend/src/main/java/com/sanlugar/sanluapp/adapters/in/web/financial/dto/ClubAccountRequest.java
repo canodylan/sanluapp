@@ -18,4 +18,6 @@ public class ClubAccountRequest {
 
     @DecimalMin(value = "0.00", inclusive = true)
     private BigDecimal currentBalance;
+
+    private Boolean primary;
 }

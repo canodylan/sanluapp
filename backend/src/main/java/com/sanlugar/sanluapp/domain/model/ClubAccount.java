@@ -19,4 +19,6 @@ public class ClubAccount {
     @Builder.Default
     private BigDecimal currentBalance = BigDecimal.ZERO;
     private LocalDateTime createdAt;
+    @Builder.Default
+    private Boolean primary = Boolean.FALSE;
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sanlugar.sanluapp.adapters.in.web.financial.dto.ApproveMoneyExpenseRequest;
 import com.sanlugar.sanluapp.adapters.in.web.financial.dto.LinkExpenseTransactionRequest;
+import com.sanlugar.sanluapp.adapters.in.web.financial.dto.MoneyExpenseAssignmentRequest;
 import com.sanlugar.sanluapp.adapters.in.web.financial.dto.MoneyExpenseRequest;
 import com.sanlugar.sanluapp.adapters.in.web.financial.dto.MoneyExpenseResponse;
 import com.sanlugar.sanluapp.adapters.in.web.financial.dto.UpdateMoneyExpenseRequest;
@@ -47,10 +48,21 @@ public class MoneyExpenseController {
         return ResponseEntity.ok(MoneyExpenseResponse.from(updated));
     }
 
+    @PatchMapping("/{id}/assignment")
+    public ResponseEntity<MoneyExpenseResponse> updateAssignment(@PathVariable Long id,
+            @RequestBody MoneyExpenseAssignmentRequest request) {
+        MoneyExpense updated = moneyExpenseService.updateAssignment(id, request.getCategoryId(), request.getAccountId());
+        return ResponseEntity.ok(MoneyExpenseResponse.from(updated));
+    }
+
     @PatchMapping("/{id}/approve")
     public ResponseEntity<MoneyExpenseResponse> approve(@PathVariable Long id,
-            @RequestBody(required = false) ApproveMoneyExpenseRequest request) {
-        MoneyExpense approved = moneyExpenseService.approve(id, request == null ? null : request.getApprovedBy());
+            @Valid @RequestBody ApproveMoneyExpenseRequest request) {
+        MoneyExpense approved = moneyExpenseService.approve(
+                id,
+                request.getApprovedBy(),
+                request.getCategoryId(),
+                request.getAccountId());
         return ResponseEntity.ok(MoneyExpenseResponse.from(approved));
     }
 
@@ -82,6 +94,8 @@ public class MoneyExpenseController {
                 .description(request.getDescription())
                 .amount(request.getAmount())
                 .receiptUrl(request.getReceiptUrl())
+            .categoryId(request.getCategoryId())
+            .accountId(request.getAccountId())
                 .requestedBy(request.getRequestedBy())
                 .build();
     }
@@ -91,6 +105,8 @@ public class MoneyExpenseController {
                 .description(request.getDescription())
                 .amount(request.getAmount())
                 .receiptUrl(request.getReceiptUrl())
+            .categoryId(request.getCategoryId())
+            .accountId(request.getAccountId())
                 .build();
     }
 }

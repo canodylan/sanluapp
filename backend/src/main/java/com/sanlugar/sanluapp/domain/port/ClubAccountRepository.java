@@ -11,4 +11,6 @@ public interface ClubAccountRepository {
     Optional<ClubAccount> findById(Long id);
     void deleteById(Long id);
     boolean existsByNameIgnoreCase(String name);
+    void clearPrimaryExcept(Long id);
+    void markPrimary(Long id);
 }

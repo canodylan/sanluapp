@@ -20,13 +20,17 @@ public class MoneyExpenseRepositoryAdapter implements MoneyExpenseRepository {
     private final SpringDataMoneyExpenseRepository expenseRepository;
     private final SpringDataUserRepository userRepository;
     private final SpringDataMoneyTransactionRepository transactionRepository;
+    private final SpringDataMoneyCategoryRepository categoryRepository;
+    private final SpringDataClubAccountRepository clubAccountRepository;
 
     @Override
     public MoneyExpense save(MoneyExpense expense) {
         MoneyExpenseEntity entity = MoneyExpenseMapper.toEntity(
                 expense,
                 userRepository::getReferenceById,
-                transactionRepository::getReferenceById);
+            transactionRepository::getReferenceById,
+            categoryRepository::getReferenceById,
+            clubAccountRepository::getReferenceById);
         MoneyExpenseEntity saved = expenseRepository.save(entity);
         return MoneyExpenseMapper.toDomain(saved);
     }

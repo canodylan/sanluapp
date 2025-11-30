@@ -15,6 +15,10 @@ public class MoneyExpenseResponse {
     private String description;
     private BigDecimal amount;
     private String receiptUrl;
+    private Long categoryId;
+    private MoneyCategoryResponse category;
+    private Long accountId;
+    private ClubAccountResponse account;
     private UserSummaryDto requestedBy;
     private Boolean approved;
     private UserSummaryDto approvedBy;
@@ -29,6 +33,10 @@ public class MoneyExpenseResponse {
                 .description(expense.getDescription())
                 .amount(expense.getAmount())
                 .receiptUrl(expense.getReceiptUrl())
+                .categoryId(expense.getCategoryId())
+                .category(expense.getCategory() == null ? null : MoneyCategoryResponse.from(expense.getCategory()))
+                .accountId(expense.getAccountId())
+                .account(expense.getAccount() == null ? null : ClubAccountResponse.from(expense.getAccount()))
                 .requestedBy(UserSummaryDto.from(expense.getRequestedByUser()))
                 .approved(expense.getApproved())
                 .approvedBy(UserSummaryDto.from(expense.getApprovedByUser()))

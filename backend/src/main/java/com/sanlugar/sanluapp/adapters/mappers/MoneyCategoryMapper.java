@@ -14,7 +14,7 @@ public final class MoneyCategoryMapper {
         return MoneyCategory.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .description(entity.getDescription())
+            .color(entity.getColor())
                 .build();
     }
 
@@ -25,7 +25,7 @@ public final class MoneyCategoryMapper {
         return MoneyCategoryEntity.builder()
                 .id(domain.getId())
                 .name(domain.getName())
-                .description(domain.getDescription())
+            .color(domain.getColor())
                 .build();
     }
 }

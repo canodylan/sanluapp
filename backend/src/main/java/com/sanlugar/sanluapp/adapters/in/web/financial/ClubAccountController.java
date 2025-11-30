@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +45,12 @@ public class ClubAccountController {
         return ResponseEntity.ok(ClubAccountResponse.from(updated));
     }
 
+    @PatchMapping("/{id}/primary")
+    public ResponseEntity<ClubAccountResponse> markPrimary(@PathVariable Long id) {
+        ClubAccount updated = clubAccountService.setPrimary(id);
+        return ResponseEntity.ok(ClubAccountResponse.from(updated));
+    }
+
     @GetMapping
     public ResponseEntity<List<ClubAccountResponse>> list() {
         List<ClubAccountResponse> response = clubAccountService.findAll().stream()
@@ -71,6 +78,7 @@ public class ClubAccountController {
                 .name(request.getName())
                 .description(request.getDescription())
                 .currentBalance(request.getCurrentBalance())
+            .primary(request.getPrimary())
                 .build();
     }
 }

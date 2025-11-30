@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class MoneyCategory {
     private Long id;
     private String name;
-    private String description;
+    private String color;
 }

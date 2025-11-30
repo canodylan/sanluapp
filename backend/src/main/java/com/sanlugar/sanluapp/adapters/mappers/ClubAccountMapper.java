@@ -19,6 +19,7 @@ public final class ClubAccountMapper {
                 .description(entity.getDescription())
                 .currentBalance(entity.getCurrentBalance())
                 .createdAt(entity.getCreatedAt())
+            .primary(entity.getPrimaryAccount())
                 .build();
     }
 
@@ -32,6 +33,7 @@ public final class ClubAccountMapper {
                 .description(domain.getDescription())
                 .currentBalance(domain.getCurrentBalance() == null ? BigDecimal.ZERO : domain.getCurrentBalance())
                 .createdAt(domain.getCreatedAt())
+                .primaryAccount(Boolean.TRUE.equals(domain.getPrimary()))
                 .build();
     }
 }

@@ -1,0 +1,237 @@
+<section class="finance-dashboard">
+  <header class="finance-header">
+    <div>
+      <p class="eyebrow">Panel financiero</p>
+      <h1>Control del mes en curso</h1>
+      <p class="helper">Información centrada en el periodo activo del club</p>
+    </div>
+    <div class="finance-actions">
+      <button mat-stroked-button color="primary" (click)="loadData()" [disabled]="loading">
+        <mat-icon fontIcon="refresh"></mat-icon>
+        Actualizar
+      </button>
+      <button mat-raised-button color="primary" routerLink="/admin/accounts">
+        <mat-icon fontIcon="account_balance_wallet"></mat-icon>
+        Ver cuentas
+      </button>
+    </div>
+  </header>
+
+  <div class="status-banner" *ngIf="error">
+    <mat-icon fontIcon="error"></mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <div class="loading" *ngIf="loading && !error">Cargando panel financiero...</div>
+
+  <div class="overview-grid" *ngIf="!loading">
+    <mat-card class="primary-card" *ngIf="primaryAccount as account">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Cuenta principal</p>
+          <h2 class="card-title">{{ account.name }}</h2>
+        </div>
+        <mat-chip color="primary" selected>Saldo disponible</mat-chip>
+      </div>
+      <p class="primary-balance">{{ account.balance | truncateCurrency: currencyCode }}</p>
+      <p class="helper" *ngIf="account.description">{{ account.description }}</p>
+      <p class="helper" *ngIf="account.createdAt">Creada {{ account.createdAt | date: 'dd/MM/yyyy' }}</p>
+    </mat-card>
+
+    <mat-card class="wallets-card" *ngIf="wallets.length">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Carteras</p>
+          <h2 class="card-title">Fondos secundarios</h2>
+        </div>
+        <span class="helper">{{ wallets.length }} activos</span>
+      </div>
+      <div class="wallet-row" *ngFor="let wallet of wallets; trackBy: trackByAccount">
+        <div class="wallet-info">
+          <mat-icon fontIcon="{{ accountIcon(wallet.type) }}"></mat-icon>
+          <div>
+            <strong>{{ wallet.name }}</strong>
+            <small *ngIf="wallet.description">{{ wallet.description }}</small>
+            <small *ngIf="!wallet.description && wallet.createdAt">Creada {{ wallet.createdAt | date: 'dd/MM/yyyy' }}</small>
+          </div>
+        </div>
+        <div class="wallet-amount">
+          <span>{{ wallet.balance | truncateCurrency: currencyCode }}</span>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="detail-grid" *ngIf="!loading">
+    <mat-card class="transactions-card">
+      <div class="card-header transactions-header">
+        <div>
+          <p class="eyebrow">Histórico completo</p>
+          <h2 class="card-title">Movimientos</h2>
+        </div>
+        <div class="filters">
+          <mat-form-field appearance="outline" class="category-filter">
+            <mat-label>Categoría</mat-label>
+            <mat-select [value]="selectedCategory" (selectionChange)="applyCategoryFilter($event.value)">
+              <mat-option [value]="null">Todas</mat-option>
+              <mat-option [value]="uncategorizedKey">Sin categoría</mat-option>
+              <mat-option
+                *ngFor="let category of categories; trackBy: trackByCategory"
+                [value]="category.id.toString()"
+                class="category-option"
+              >
+                <span class="color-dot" [style.background-color]="category.color || defaultCategoryColor"></span>
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-button type="button" (click)="clearCategoryFilter()" *ngIf="selectedCategory">Limpiar</button>
+          <button mat-stroked-button color="primary" type="button" (click)="openCategoryModal()">
+            <mat-icon fontIcon="label"></mat-icon>
+            Categorías
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!filteredTransactions.length" class="empty">No hay movimientos registrados.</div>
+      <div class="transaction-row" *ngFor="let transaction of filteredTransactions; trackBy: trackByTransaction">
+        <div class="transaction-info">
+          <strong>{{ transaction.description }}</strong>
+          <small>{{ transaction.categoryName }}</small>
+          <small>{{ transaction.transactionDate | date: 'dd/MM/yyyy' }} · {{ transactionTypeLabel(transaction.type) }}</small>
+        </div>
+        <div class="transaction-amount" [class.positive]="transaction.type === 'INCOME'" [class.negative]="transaction.type === 'EXPENSE'">
+          <span>{{ transaction.amount | truncateCurrency: currencyCode }}</span>
+          <mat-chip [color]="transactionChipColor(transaction.type)" selected>
+            {{ transactionTypeLabel(transaction.type) }}
+          </mat-chip>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="requests-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Solicitudes</p>
+          <h2 class="card-title">Gastos por aprobar</h2>
+        </div>
+        <span class="helper">{{ spendingRequests.length }} registradas</span>
+      </div>
+      <div *ngIf="!spendingRequests.length" class="empty">No hay solicitudes de gasto.</div>
+      <div class="request-row" *ngFor="let request of spendingRequests; trackBy: trackByRequest">
+        <ng-container *ngIf="assignmentFor(request) as assignment">
+        <div class="request-info">
+          <strong>{{ request.description }}</strong>
+          <small>Solicitado por {{ request.requestedBy || 'Sin solicitante' }}</small>
+          <small>
+            Categoría:
+            <span class="category-pill">
+              <span class="color-dot" [style.background-color]="request.categoryColor || defaultCategoryColor"></span>
+              {{ request.categoryName || 'Sin categoría' }}
+            </span>
+          </small>
+          <small>
+            Cuenta asignada:
+            <span class="account-label">
+              {{ assignment.accountId ? (request.accountName || 'Sin nombre') : 'Sin cuenta' }}
+            </span>
+          </small>
+          <small *ngIf="request.requestedAt">Registrado {{ request.requestedAt | date: 'dd/MM/yyyy' }}</small>
+        </div>
+        <div class="request-meta">
+          <span class="request-amount">{{ request.amount | truncateCurrency: currencyCode }}</span>
+          <mat-chip [color]="requestChipColor(request.status)" selected>{{ requestStatusLabel(request.status) }}</mat-chip>
+        </div>
+        <div class="request-assignment" *ngIf="request.status === 'PENDING'">
+          <mat-form-field appearance="outline" class="request-select">
+            <mat-label>Categoría</mat-label>
+            <mat-select
+              [value]="assignment.categoryId"
+              (selectionChange)="onCategoryChange(request, $event.value)"
+              [disabled]="updatingAssignmentId === request.id"
+            >
+              <mat-option [value]="null">Sin categoría</mat-option>
+              <mat-option *ngFor="let category of categories; trackBy: trackByCategory" [value]="category.id">
+                <span class="color-dot" [style.background-color]="category.color || defaultCategoryColor"></span>
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="request-select">
+            <mat-label>Cuenta</mat-label>
+            <mat-select
+              [value]="assignment.accountId"
+              (selectionChange)="onAccountChange(request, $event.value)"
+              [disabled]="updatingAssignmentId === request.id"
+            >
+              <mat-option [value]="null">Selecciona una cuenta</mat-option>
+              <mat-option *ngFor="let account of allAccounts; trackBy: trackByAccount" [value]="account.id">
+                {{ account.name }} · {{ account.balance | truncateCurrency: currencyCode }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="request-actions" *ngIf="request.status === 'PENDING'">
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="approveRequest(request)"
+            [disabled]="approvingRequestId === request.id || !assignment.accountId"
+          >
+            <mat-icon *ngIf="approvingRequestId === request.id" class="spinner">autorenew</mat-icon>
+            Aprobar
+          </button>
+        </div>
+        </ng-container>
+      </div>
+    </mat-card>
+  </div>
+</section>
+
+<div class="category-modal-backdrop" *ngIf="categoryModalOpen">
+  <mat-card class="category-modal">
+    <div class="category-modal__header">
+      <div>
+        <p class="eyebrow">Etiquetas</p>
+        <h2>Gestionar categorías</h2>
+      </div>
+      <button mat-icon-button type="button" (click)="closeCategoryModal()">
+        <mat-icon fontIcon="close"></mat-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="categoryForm" (ngSubmit)="submitCategory()" class="category-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="categoryForm.controls.name.hasError('required')">Requerido</mat-error>
+        <mat-error *ngIf="categoryForm.controls.name.hasError('maxlength')">Máximo 60 caracteres</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="color-field">
+        <mat-label>Color</mat-label>
+        <input matInput type="color" formControlName="color" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="savingCategory">Agregar</button>
+    </form>
+
+    <div *ngIf="categories.length; else emptyCategories" class="category-list">
+      <div class="category-item" *ngFor="let category of categories; trackBy: trackByCategory">
+        <div class="category-pill">
+          <span class="color-dot" [style.background-color]="category.color || defaultCategoryColor"></span>
+          <span>{{ category.name }}</span>
+        </div>
+        <button
+          mat-icon-button
+          color="warn"
+          type="button"
+          (click)="deleteCategory(category)"
+          [disabled]="deletingCategoryId === category.id"
+        >
+          <mat-icon fontIcon="delete"></mat-icon>
+        </button>
+      </div>
+    </div>
+    <ng-template #emptyCategories>
+      <p class="empty">Aún no hay categorías creadas.</p>
+    </ng-template>
+  </mat-card>
+</div>

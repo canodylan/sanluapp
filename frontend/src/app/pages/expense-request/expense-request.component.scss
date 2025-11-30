@@ -1,0 +1,109 @@
+.expense-request {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.intro-card {
+  .intro-text {
+    margin-bottom: 1rem;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .guidelines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(0, 0, 0, 0.75);
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #1976d2;
+      }
+    }
+  }
+}
+
+.form-card {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+  }
+
+  .feedback {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+
+    &.success {
+      background: rgba(46, 125, 50, 0.1);
+      color: #2e7d32;
+    }
+
+    &.error {
+      background: rgba(211, 47, 47, 0.1);
+      color: #d32f2f;
+    }
+
+    mat-icon {
+      font-size: 22px;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 599px) {
+  .expense-request {
+    padding: 0 1rem;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+}

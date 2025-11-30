@@ -40,6 +40,9 @@ public class ClubAccountEntity {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "is_primary", nullable = false)
+    private Boolean primaryAccount;
+
     @PrePersist
     void onCreate() {
         if (createdAt == null) {
@@ -47,6 +50,9 @@ public class ClubAccountEntity {
         }
         if (currentBalance == null) {
             currentBalance = BigDecimal.ZERO;
+        }
+        if (primaryAccount == null) {
+            primaryAccount = Boolean.FALSE;
         }
     }
 }

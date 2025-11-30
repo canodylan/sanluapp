@@ -14,6 +14,8 @@ public interface SpringDataMoneyExpenseRepository extends JpaRepository<MoneyExp
     @EntityGraph(attributePaths = {
         "requestedBy",
         "approvedBy",
+        "category",
+        "account",
         "transaction",
         "transaction.category",
         "transaction.accountFrom",
@@ -24,6 +26,8 @@ public interface SpringDataMoneyExpenseRepository extends JpaRepository<MoneyExp
     @EntityGraph(attributePaths = {
         "requestedBy",
         "approvedBy",
+        "category",
+        "account",
         "transaction",
         "transaction.category",
         "transaction.accountFrom",
@@ -34,6 +38,8 @@ public interface SpringDataMoneyExpenseRepository extends JpaRepository<MoneyExp
     @EntityGraph(attributePaths = {
         "requestedBy",
         "approvedBy",
+        "category",
+        "account",
         "transaction",
         "transaction.category",
         "transaction.accountFrom",

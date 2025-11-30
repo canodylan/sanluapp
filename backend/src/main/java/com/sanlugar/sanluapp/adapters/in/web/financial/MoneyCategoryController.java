@@ -69,7 +69,7 @@ public class MoneyCategoryController {
     private MoneyCategory toDomain(MoneyCategoryRequest request) {
         return MoneyCategory.builder()
                 .name(request.getName())
-                .description(request.getDescription())
+                .color(request.getColor())
                 .build();
     }
 }

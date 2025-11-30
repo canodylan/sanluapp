@@ -98,6 +98,28 @@
   color: var(--mat-text-primary) !important;
 }
 
+// Select & autocomplete panels
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel,
+.mat-mdc-menu-panel {
+  background-color: var(--mat-surface) !important;
+  color: var(--mat-text-primary) !important;
+  backdrop-filter: none; // avoid translucent overlay look
+}
+
+.mat-mdc-option,
+.mat-mdc-menu-item {
+  color: var(--mat-text-primary) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected,
+.mat-mdc-option.mdc-list-item--activated,
+.mat-mdc-menu-item.mdc-list-item--selected,
+.mat-mdc-menu-item.mdc-list-item--activated {
+  background-color: var(--mat-accent-light) !important;
+  color: var(--mat-text-primary) !important;
+}
+
 // Custom app-level overrides
 html, body {
   height: 100%;

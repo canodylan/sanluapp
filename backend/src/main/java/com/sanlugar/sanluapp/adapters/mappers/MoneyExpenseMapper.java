@@ -2,6 +2,8 @@ package com.sanlugar.sanluapp.adapters.mappers;
 
 import java.util.function.Function;
 
+import com.sanlugar.sanluapp.adapters.out.persistence.ClubAccountEntity;
+import com.sanlugar.sanluapp.adapters.out.persistence.MoneyCategoryEntity;
 import com.sanlugar.sanluapp.adapters.out.persistence.MoneyExpenseEntity;
 import com.sanlugar.sanluapp.adapters.out.persistence.MoneyTransactionEntity;
 import com.sanlugar.sanluapp.adapters.out.persistence.UserEntity;
@@ -22,6 +24,10 @@ public final class MoneyExpenseMapper {
                 .description(entity.getDescription())
                 .amount(entity.getAmount())
                 .receiptUrl(entity.getReceiptUrl())
+                .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
+                .category(MoneyCategoryMapper.toDomain(entity.getCategory()))
+                .accountId(entity.getAccount() != null ? entity.getAccount().getId() : null)
+                .account(ClubAccountMapper.toDomain(entity.getAccount()))
                 .requestedBy(entity.getRequestedBy() != null ? entity.getRequestedBy().getId() : null)
                 .requestedByUser(FinancialUserMapper.toSummary(entity.getRequestedBy()))
                 .approved(entity.getApproved())
@@ -35,7 +41,9 @@ public final class MoneyExpenseMapper {
     public static MoneyExpenseEntity toEntity(
             MoneyExpense domain,
             Function<Long, UserEntity> userResolver,
-            Function<Long, MoneyTransactionEntity> transactionResolver) {
+            Function<Long, MoneyTransactionEntity> transactionResolver,
+            Function<Long, MoneyCategoryEntity> categoryResolver,
+            Function<Long, ClubAccountEntity> accountResolver) {
         if (domain == null) {
             return null;
         }
@@ -57,6 +65,12 @@ public final class MoneyExpenseMapper {
         }
         if (domain.getTransactionId() != null && transactionResolver != null) {
             entity.setTransaction(transactionResolver.apply(domain.getTransactionId()));
+        }
+        if (domain.getCategoryId() != null && categoryResolver != null) {
+            entity.setCategory(categoryResolver.apply(domain.getCategoryId()));
+        }
+        if (domain.getAccountId() != null && accountResolver != null) {
+            entity.setAccount(accountResolver.apply(domain.getAccountId()));
         }
 
         return entity;

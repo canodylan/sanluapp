@@ -50,4 +50,14 @@ public class ClubAccountRepositoryAdapter implements ClubAccountRepository {
     public boolean existsByNameIgnoreCase(String name) {
         return clubAccountRepository.existsByNameIgnoreCase(name);
     }
+
+    @Override
+    public void clearPrimaryExcept(Long id) {
+        clubAccountRepository.clearPrimaryExcept(id);
+    }
+
+    @Override
+    public void markPrimary(Long id) {
+        clubAccountRepository.markPrimary(id);
+    }
 }

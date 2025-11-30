@@ -19,6 +19,10 @@ public class MoneyExpense {
     private String description;
     private BigDecimal amount;
     private String receiptUrl;
+    private Long categoryId;
+    private MoneyCategory category;
+    private Long accountId;
+    private ClubAccount account;
     private Long requestedBy;
     private FinancialUserSummary requestedByUser;
     @Builder.Default

@@ -49,6 +49,7 @@ export class DashboardLayoutComponent {
     // Build once so RouterLinkActive does not thrash the view
     const links: NavLink[] = [
       { label: 'Cuotas', route: '/quota' },
+      { label: 'Registrar gasto', route: '/expenses/new' }
     ];
     
     return links;

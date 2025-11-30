@@ -1,0 +1,112 @@
+<section class="accounts-dashboard">
+  <header class="accounts-header">
+    <div>
+      <p class="eyebrow">Cuentas del club</p>
+      <h1>Gestión de fondos</h1>
+      <p class="helper">Crea nuevas cuentas, marca la principal y mueve saldo entre ellas.</p>
+    </div>
+    <button mat-stroked-button color="primary" (click)="loadAccounts()" [disabled]="loading">
+      <mat-icon fontIcon="refresh"></mat-icon>
+      Actualizar
+    </button>
+  </header>
+
+  <div class="status-banner" *ngIf="error">
+    <mat-icon fontIcon="error"></mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <div class="loading" *ngIf="loading && !error">Cargando cuentas...</div>
+
+  <div class="accounts-grid" *ngIf="!loading">
+    <mat-card class="accounts-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Cuentas registradas</p>
+          <h2 class="card-title">Resumen</h2>
+        </div>
+        <span class="helper">{{ accounts.length }} cuentas</span>
+      </div>
+      <div *ngIf="!accounts.length" class="empty">Aún no hay cuentas creadas.</div>
+      <div class="account-row" *ngFor="let account of accounts; trackBy: trackByAccount">
+        <div class="account-info">
+          <mat-icon fontIcon="account_balance"></mat-icon>
+          <div>
+            <strong>{{ account.name }}</strong>
+            <small *ngIf="account.description">{{ account.description }}</small>
+            <small *ngIf="!account.description && account.createdAt">Creada {{ account.createdAt | date: 'dd/MM/yyyy' }}</small>
+          </div>
+        </div>
+        <div class="account-actions">
+          <div class="account-balance">{{ account.balance | truncateCurrency:'EUR' }}</div>
+          <mat-chip color="primary" selected *ngIf="account.primary">Principal</mat-chip>
+          <button mat-button color="primary" (click)="markPrimary(account)" [disabled]="markingPrimaryId === account.id" *ngIf="!account.primary">
+            Marcar principal
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="form-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Nueva cuenta</p>
+          <h2 class="card-title">Crear cuenta</h2>
+        </div>
+      </div>
+      <form [formGroup]="accountForm" (ngSubmit)="submitAccount()" class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name" />
+          <mat-error *ngIf="accountForm.controls.name.hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="accountForm.controls.name.hasError('maxlength')">Máximo 100 caracteres</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput rows="3" formControlName="description"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Saldo inicial</mat-label>
+          <input matInput type="number" [formControl]="initialBalanceControl" min="0" step="0.01" />
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" [disabled]="savingAccount">Crear cuenta</button>
+      </form>
+    </mat-card>
+
+    <mat-card class="form-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">Transferencias internas</p>
+          <h2 class="card-title">Mover saldo</h2>
+        </div>
+      </div>
+      <form [formGroup]="transferForm" (ngSubmit)="submitTransfer()" class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Cuenta origen</mat-label>
+          <mat-select formControlName="fromAccountId">
+            <mat-option *ngFor="let account of accounts" [value]="account.id">{{ account.name }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="transferForm.controls.fromAccountId.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Cuenta destino</mat-label>
+          <mat-select formControlName="toAccountId">
+            <mat-option *ngFor="let account of accounts" [value]="account.id">{{ account.name }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="transferForm.controls.toAccountId.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Monto</mat-label>
+          <input matInput type="number" formControlName="amount" min="0.01" step="0.01" />
+          <mat-error *ngIf="transferForm.controls.amount.hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="transferForm.controls.amount.hasError('min')">Debe ser mayor a cero</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput rows="2" formControlName="description"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="accent" type="submit" [disabled]="transferring">Transferir</button>
+      </form>
+    </mat-card>
+  </div>
+</section>

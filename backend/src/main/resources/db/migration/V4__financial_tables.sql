@@ -5,9 +5,26 @@ CREATE TABLE club_accounts (
     id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(100) NOT NULL,
     description     TEXT,
-    current_balance NUMERIC(10,2) DEFAULT 0.00, 
+    current_balance NUMERIC(10,2) DEFAULT 0.00,
+    is_primary      BOOLEAN NOT NULL DEFAULT FALSE,
     created_at      TIMESTAMP DEFAULT NOW()
 );
+
+-- Marca una cuenta principal por defecto en instalaciones existentes
+WITH first_account AS (
+    SELECT id
+    FROM club_accounts
+    ORDER BY created_at ASC NULLS LAST, id ASC
+    LIMIT 1
+)
+UPDATE club_accounts
+SET is_primary = TRUE
+WHERE id = (SELECT id FROM first_account)
+  AND NOT EXISTS (SELECT 1 FROM club_accounts WHERE is_primary = TRUE);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_club_accounts_primary_true
+    ON club_accounts (is_primary)
+    WHERE is_primary;
 
 -- =============================================
 -- CATEGORÍAS FINANCIERAS
@@ -15,7 +32,7 @@ CREATE TABLE club_accounts (
 CREATE TABLE money_categories (
     id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(100) UNIQUE NOT NULL,
-    description     TEXT
+    color           VARCHAR(20) NOT NULL DEFAULT '#1976d2'
 );
 
 -- =============================================
@@ -23,7 +40,7 @@ CREATE TABLE money_categories (
 -- =============================================
 CREATE TABLE money_transactions (
     id                  BIGSERIAL PRIMARY KEY,
-    type                VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense', 'transfer')),
+    type                VARCHAR(20) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE', 'TRANSFER')),
     amount              NUMERIC(10,2) NOT NULL CHECK (amount > 0),
     description         VARCHAR(255),
     category_id         BIGINT REFERENCES money_categories(id),
@@ -37,7 +54,7 @@ CREATE TABLE money_transactions (
     related_entity_id   BIGINT
 );
 
--- Index útil
+-- Índices útiles para las consultas más frecuentes
 CREATE INDEX idx_money_transactions_type ON money_transactions(type);
 CREATE INDEX idx_money_transactions_category ON money_transactions(category_id);
 CREATE INDEX idx_money_transactions_created_at ON money_transactions(created_at);
@@ -50,7 +67,7 @@ CREATE INDEX idx_money_transactions_created_at ON money_transactions(created_at)
 ALTER TABLE money_transactions
 ADD CONSTRAINT transfer_require_accounts
 CHECK (
-    (type <> 'transfer')
+    (type <> 'TRANSFER')
     OR (account_from_id IS NOT NULL AND account_to_id IS NOT NULL)
 );
 
@@ -58,7 +75,7 @@ CHECK (
 ALTER TABLE money_transactions
 ADD CONSTRAINT income_no_source
 CHECK (
-    (type <> 'income')
+    (type <> 'INCOME')
     OR (account_from_id IS NULL)
 );
 
@@ -66,7 +83,7 @@ CHECK (
 ALTER TABLE money_transactions
 ADD CONSTRAINT expense_no_target
 CHECK (
-    (type <> 'expense')
+    (type <> 'EXPENSE')
     OR (account_to_id IS NULL)
 );
 
@@ -83,5 +100,10 @@ CREATE TABLE money_expenses (
     approved        BOOLEAN DEFAULT FALSE,
     approved_by     BIGINT REFERENCES users(id),
     approved_at     TIMESTAMP,
-    created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+    category_id     BIGINT REFERENCES money_categories (id),
+    account_id      BIGINT REFERENCES club_accounts (id)
 );
+
+CREATE INDEX idx_money_expenses_category ON money_expenses (category_id);
+CREATE INDEX idx_money_expenses_account ON money_expenses (account_id);

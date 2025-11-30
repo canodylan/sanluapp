@@ -10,13 +10,13 @@ import lombok.Data;
 public class MoneyCategoryResponse {
     private Long id;
     private String name;
-    private String description;
+    private String color;
 
     public static MoneyCategoryResponse from(MoneyCategory category) {
         return MoneyCategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .description(category.getDescription())
+                .color(category.getColor())
                 .build();
     }
 }

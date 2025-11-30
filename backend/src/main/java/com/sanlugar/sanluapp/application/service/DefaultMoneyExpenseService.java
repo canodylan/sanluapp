@@ -9,8 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.sanlugar.sanluapp.domain.model.ClubAccount;
+import com.sanlugar.sanluapp.domain.model.MoneyCategory;
 import com.sanlugar.sanluapp.domain.model.MoneyExpense;
+import com.sanlugar.sanluapp.domain.model.MoneyTransaction;
+import com.sanlugar.sanluapp.domain.model.MoneyTransactionType;
 import com.sanlugar.sanluapp.domain.port.MoneyExpenseRepository;
+import com.sanlugar.sanluapp.domain.port.ClubAccountRepository;
+import com.sanlugar.sanluapp.domain.port.MoneyCategoryRepository;
 import com.sanlugar.sanluapp.domain.port.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,12 +28,17 @@ public class DefaultMoneyExpenseService implements MoneyExpenseService {
 
     private final MoneyExpenseRepository moneyExpenseRepository;
     private final UserRepository userRepository;
+    private final ClubAccountRepository clubAccountRepository;
+    private final MoneyCategoryRepository moneyCategoryRepository;
+    private final MoneyTransactionService moneyTransactionService;
 
     @Override
     public MoneyExpense create(MoneyExpense expense) {
         validateForCreate(expense);
         userRepository.findById(expense.getRequestedBy())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario solicitante no encontrado"));
+        expense.setCategory(resolveCategory(expense.getCategoryId()));
+        expense.setAccount(resolveAccount(expense.getAccountId()));
         expense.setId(null);
         expense.setApproved(Boolean.FALSE);
         expense.setApprovedBy(null);
@@ -50,24 +61,72 @@ public class DefaultMoneyExpenseService implements MoneyExpenseService {
         if (expense.getReceiptUrl() != null) {
             existing.setReceiptUrl(expense.getReceiptUrl());
         }
+        if (expense.getCategoryId() != null) {
+            existing.setCategory(resolveCategory(expense.getCategoryId()));
+            existing.setCategoryId(expense.getCategoryId());
+        }
+        if (expense.getAccountId() != null) {
+            ClubAccount account = resolveAccount(expense.getAccountId());
+            if (account == null) {
+                throw new IllegalArgumentException("La cuenta indicada no existe");
+            }
+            existing.setAccount(account);
+            existing.setAccountId(expense.getAccountId());
+        }
         return moneyExpenseRepository.save(existing);
     }
 
     @Override
-    public MoneyExpense approve(Long id, Long approvedBy) {
+    public MoneyExpense updateAssignment(Long id, Long categoryId, Long accountId) {
+        MoneyExpense existing = moneyExpenseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Solicitud de gasto no encontrada"));
+        existing.setCategoryId(categoryId);
+        existing.setCategory(resolveCategory(categoryId));
+        existing.setAccountId(accountId);
+        existing.setAccount(resolveAccount(accountId));
+        return moneyExpenseRepository.save(existing);
+    }
+
+    @Override
+    public MoneyExpense approve(Long id, Long approvedBy, Long categoryId, Long accountId) {
         MoneyExpense expense = moneyExpenseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Solicitud de gasto no encontrada"));
         if (Boolean.TRUE.equals(expense.getApproved())) {
             throw new IllegalStateException("El gasto ya fue aprobado");
         }
-        if (approvedBy != null) {
-            userRepository.findById(approvedBy)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario aprobador no encontrado"));
+        if (approvedBy == null) {
+            throw new IllegalArgumentException("Debe indicar el usuario aprobador");
         }
-        expense.setApproved(Boolean.TRUE);
+        userRepository.findById(approvedBy)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario aprobador no encontrado"));
+
+        Long resolvedCategoryId = categoryId != null ? categoryId : expense.getCategoryId();
+        Long resolvedAccountId = accountId != null ? accountId : expense.getAccountId();
+        ClubAccount account = resolveAccount(resolvedAccountId);
+        if (account == null) {
+            throw new IllegalStateException("Debe indicar la cuenta a la que se imputará el gasto");
+        }
+        expense.setCategoryId(resolvedCategoryId);
+        expense.setCategory(resolveCategory(resolvedCategoryId));
+        expense.setAccountId(account.getId());
+        expense.setAccount(account);
         expense.setApprovedBy(approvedBy);
-        expense.setApprovedAt(LocalDateTime.now());
-        return moneyExpenseRepository.save(expense);
+        moneyExpenseRepository.save(expense);
+
+        MoneyTransaction transaction = MoneyTransaction.builder()
+                .type(MoneyTransactionType.EXPENSE)
+                .amount(expense.getAmount())
+                .description(expense.getDescription())
+                .categoryId(resolvedCategoryId)
+                .accountFromId(account.getId())
+                .createdBy(approvedBy)
+                .relatedEntityId(expense.getId())
+                .relatedEntityType("money_expense")
+                .build();
+
+        moneyTransactionService.recordTransaction(transaction);
+        return moneyExpenseRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("No se pudo recuperar el gasto aprobado"));
     }
 
     @Override
@@ -117,5 +176,21 @@ public class DefaultMoneyExpenseService implements MoneyExpenseService {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El monto debe ser mayor que cero");
         }
+    }
+
+    private MoneyCategory resolveCategory(Long categoryId) {
+        if (categoryId == null) {
+            return null;
+        }
+        return moneyCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+    }
+
+    private ClubAccount resolveAccount(Long accountId) {
+        if (accountId == null) {
+            return null;
+        }
+        return clubAccountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta contable no encontrada"));
     }
 }

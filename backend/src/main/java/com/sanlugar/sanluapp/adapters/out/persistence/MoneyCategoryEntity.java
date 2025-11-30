@@ -27,6 +27,6 @@ public class MoneyCategoryEntity {
     @Column(nullable = false, length = 100, unique = true)
     private String name;
 
-    @Column(columnDefinition = "text")
-    private String description;
+    @Column(nullable = false, length = 20)
+    private String color;
 }

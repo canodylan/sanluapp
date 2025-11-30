@@ -1,6 +1,7 @@
 package com.sanlugar.sanluapp.adapters.in.web.financial.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ public class MoneyCategoryRequest {
     @Size(max = 100)
     private String name;
 
-    @Size(max = 1000)
-    private String description;
+    @NotBlank
+    @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "El color debe estar en formato HEX (#RRGGBB)")
+    private String color;
 }

@@ -16,6 +16,7 @@ public class ClubAccountResponse {
     private String description;
     private BigDecimal currentBalance;
     private LocalDateTime createdAt;
+    private Boolean primary;
 
     public static ClubAccountResponse from(ClubAccount account) {
         return ClubAccountResponse.builder()
@@ -24,6 +25,7 @@ public class ClubAccountResponse {
                 .description(account.getDescription())
                 .currentBalance(account.getCurrentBalance())
                 .createdAt(account.getCreatedAt())
+                .primary(account.getPrimary())
                 .build();
     }
 }

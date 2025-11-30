@@ -67,7 +67,7 @@ public class MoneyTransactionResponse {
     public static class CategorySummary {
         private Long id;
         private String name;
-        private String description;
+        private String color;
 
         public static CategorySummary from(MoneyCategory category, Long fallbackId) {
             if (category == null && fallbackId == null) {
@@ -76,7 +76,7 @@ public class MoneyTransactionResponse {
             return CategorySummary.builder()
                     .id(category != null ? category.getId() : fallbackId)
                     .name(category != null ? category.getName() : null)
-                    .description(category != null ? category.getDescription() : null)
+                    .color(category != null ? category.getColor() : null)
                     .build();
         }
     }

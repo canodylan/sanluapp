@@ -8,7 +8,8 @@ import com.sanlugar.sanluapp.domain.model.MoneyExpense;
 public interface MoneyExpenseService {
     MoneyExpense create(MoneyExpense expense);
     MoneyExpense update(Long id, MoneyExpense expense);
-    MoneyExpense approve(Long id, Long approvedBy);
+    MoneyExpense updateAssignment(Long id, Long categoryId, Long accountId);
+    MoneyExpense approve(Long id, Long approvedBy, Long categoryId, Long accountId);
     MoneyExpense linkToTransaction(Long id, Long transactionId);
     List<MoneyExpense> findByApproved(Boolean approved);
     Optional<MoneyExpense> findById(Long id);
